@@ -1,55 +1,64 @@
-import streamlit as st
+import dash
+from dash import dcc, html
+from dash.dependencies import Input, Output, State
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
+import plotly.express as px
 
-# Título de la aplicación
-st.title('Visualización de Programación de Vuelos QT')
+# Inicializar la aplicación Dash
+app = dash.Dash(__name__)
 
-# Subir el archivo CSV
-uploaded_file = st.file_uploader("Sube tu archivo CSV", type=["csv"])
+# Layout de la aplicación
+app.layout = html.Div([
+    html.H1("Visualización de Programación de Vuelos QT"),
+    dcc.Upload(
+        id='upload-data',
+        children=html.Div([
+            'Arrastra y suelta o ',
+            html.A('Selecciona un archivo CSV')
+        ]),
+        style={
+            'width': '100%',
+            'height': '60px',
+            'lineHeight': '60px',
+            'borderWidth': '1px',
+            'borderStyle': 'dashed',
+            'borderRadius': '5px',
+            'textAlign': 'center',
+            'margin': '10px'
+        },
+        multiple=False
+    ),
+    dcc.Graph(id='flight-schedule-graph')
+])
 
-if uploaded_file is not None:
-    # Cargar los datos desde el archivo CSV con el separador adecuado
-    df = pd.read_csv(uploaded_file, sep=';')
-    
-    # Convertir las columnas de fecha a tipo datetime
-    df['fecha_salida'] = pd.to_datetime(df['fecha_salida'])
-    df['fecha_llegada'] = pd.to_datetime(df['fecha_llegada'])
+# Callback para procesar el archivo subido
+@app.callback(
+    Output('flight-schedule-graph', 'figure'),
+    Input('upload-data', 'contents'),
+    State('upload-data', 'filename')
+)
+def update_output(contents, filename):
+    if contents is None:
+        return {}
 
-    # Crear la figura y el eje
-    fig, ax = plt.subplots(figsize=(15, 10))
+    content_type, content_string = contents.split(',')
+    decoded = base64.b64decode(content_string)
+    try:
+        if 'csv' in filename:
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep=';')
+            df['fecha_salida'] = pd.to_datetime(df['fecha_salida'])
+            df['fecha_llegada'] = pd.to_datetime(df['fecha_llegada'])
+            
+            fig = px.timeline(df, x_start='fecha_salida', x_end='fecha_llegada', y='aeronave', color='aeronave',
+                              hover_data={'numero_vuelo': True, 'origen': True, 'destino': True})
+            fig.update_layout(xaxis_title='Hora', yaxis_title='Aeronave', title='Programación de Vuelos QT')
+            return fig
+    except Exception as e:
+        print(e)
+        return {}
 
-    # Iterar sobre las aeronaves y agregar los vuelos al gráfico
-    aeronaves = df['aeronave'].unique()
-    for i, aeronave in enumerate(aeronaves):
-        vuelos_aeronave = df[df['aeronave'] == aeronave]
-        for _, vuelo in vuelos_aeronave.iterrows():
-            ax.broken_barh([(vuelo['fecha_salida'], vuelo['fecha_llegada'] - vuelo['fecha_salida'])], 
-                           (i - 0.4, 0.8), facecolors='red')
-            ax.text(vuelo['fecha_salida'] + (vuelo['fecha_llegada'] - vuelo['fecha_salida']) / 2, 
-                    i, vuelo['numero_vuelo'], ha='center', va='center', color='white')
-            ax.text(vuelo['fecha_salida'], i + 0.2, vuelo['origen'], ha='left', va='center', color='white')
-            ax.text(vuelo['fecha_llegada'], i + 0.2, vuelo['destino'], ha='right', va='center', color='white')
-            ax.text(vuelo['fecha_salida'], i - 0.2, vuelo['fecha_salida'].strftime('%H:%M'), ha='left', va='center', color='white')
-            ax.text(vuelo['fecha_llegada'], i - 0.2, vuelo['fecha_llegada'].strftime('%H:%M'), ha='right', va='center', color='white')
+if __name__ == '__main__':
+    app.run_server(debug=True)
 
-    # Formato del eje Y
-    ax.set_yticks(range(len(aeronaves)))
-    ax.set_yticklabels(aeronaves)
-    ax.set_ylim(-1, len(aeronaves))
-
-    # Formato del eje X
-    ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-    plt.xticks(rotation=45)
-
-    # Etiquetas y título
-    plt.xlabel('Hora')
-    plt.ylabel('Aeronave')
-    plt.title('Programación de Vuelos QT')
-
-    # Mostrar el gráfico
-    st.pyplot(fig)
 
 
