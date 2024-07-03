@@ -1,4 +1,4 @@
-dash==2.8.1
-pandas==1.5.3
-plotly==5.10.0
-pdfkit==1.0.0
+dash
+pandas
+plotly
+pdfkit
