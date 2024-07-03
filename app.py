@@ -26,7 +26,7 @@ if uploaded_file is not None:
         vuelos_aeronave = df[df['aeronave'] == aeronave]
         for _, vuelo in vuelos_aeronave.iterrows():
             ax.broken_barh([(vuelo['fecha_salida'], vuelo['fecha_llegada'] - vuelo['fecha_salida'])], 
-                           (i - 0.4, 0.8), facecolors='red')  # Cambio de color a rojo
+                           (i - 0.4, 0.8), facecolors='red')
             # Agregar el número de vuelo en el centro del rectángulo
             ax.text(vuelo['fecha_salida'] + (vuelo['fecha_llegada'] - vuelo['fecha_salida']) / 2, 
                     i, vuelo['numero_vuelo'], ha='center', va='center', color='white')
@@ -52,7 +52,7 @@ if uploaded_file is not None:
     # Etiquetas y título
     plt.xlabel('Hora')
     plt.ylabel('Aeronave')
-    plt.title('Programación de Vuelos QT')  # Cambio de título
+    plt.title('Programación de Vuelos QT')
 
     # Mostrar el gráfico en Streamlit
     st.pyplot(fig)
