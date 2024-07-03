@@ -1,15 +1,16 @@
+import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import streamlit as st
 
+# Título de la aplicación
 st.title('Programación de Vuelos QT')
 
 # Subir el archivo CSV
 uploaded_file = st.file_uploader("Elige un archivo CSV", type="csv")
 
 if uploaded_file is not None:
-    # Leer el archivo CSV
+    # Cargar los datos desde el archivo CSV con el separador adecuado
     df = pd.read_csv(uploaded_file, sep=';')
 
     # Convertir las columnas de fecha a tipo datetime
@@ -53,5 +54,5 @@ if uploaded_file is not None:
     plt.ylabel('Aeronave')
     plt.title('Programación de Vuelos QT')  # Cambio de título
 
-    # Mostrar el gráfico
+    # Mostrar el gráfico en Streamlit
     st.pyplot(fig)
