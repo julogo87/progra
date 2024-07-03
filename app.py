@@ -3,16 +3,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
-# Título de la aplicación
-st.title('Programación de Vuelos QT')
-
 # Subir el archivo CSV
-uploaded_file = st.file_uploader("Elige un archivo CSV", type="csv")
+st.title('Visualización de Programación de Vuelos QT')
+uploaded_file = st.file_uploader("Sube tu archivo CSV", type=["csv"])
 
 if uploaded_file is not None:
     # Cargar los datos desde el archivo CSV con el separador adecuado
     df = pd.read_csv(uploaded_file, sep=';')
-
+    
     # Convertir las columnas de fecha a tipo datetime
     df['fecha_salida'] = pd.to_datetime(df['fecha_salida'])
     df['fecha_llegada'] = pd.to_datetime(df['fecha_llegada'])
@@ -26,7 +24,7 @@ if uploaded_file is not None:
         vuelos_aeronave = df[df['aeronave'] == aeronave]
         for _, vuelo in vuelos_aeronave.iterrows():
             ax.broken_barh([(vuelo['fecha_salida'], vuelo['fecha_llegada'] - vuelo['fecha_salida'])], 
-                           (i - 0.4, 0.8), facecolors='red')
+                           (i - 0.4, 0.8), facecolors='red')  # Cambio de color a rojo
             # Agregar el número de vuelo en el centro del rectángulo
             ax.text(vuelo['fecha_salida'] + (vuelo['fecha_llegada'] - vuelo['fecha_salida']) / 2, 
                     i, vuelo['numero_vuelo'], ha='center', va='center', color='white')
@@ -47,5 +45,13 @@ if uploaded_file is not None:
     # Formato del eje X
     ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-   
+    plt.xticks(rotation=45)
+
+    # Etiquetas y título
+    plt.xlabel('Hora')
+    plt.ylabel('Aeronave')
+    plt.title('Programación de Vuelos QT')  # Cambio de título
+
+    # Mostrar el gráfico
+    st.pyplot(fig)
 
