@@ -47,12 +47,5 @@ if uploaded_file is not None:
     # Formato del eje X
     ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-    plt.xticks(rotation=45)
+   
 
-    # Etiquetas y título
-    plt.xlabel('Hora')
-    plt.ylabel('Aeronave')
-    plt.title('Programación de Vuelos QT')
-
-    # Mostrar el gráfico en Streamlit
-    st.pyplot(fig)
