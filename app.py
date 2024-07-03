@@ -50,15 +50,28 @@ def update_output(contents, filename):
     decoded = base64.b64decode(content_string)
     try:
         if 'csv' in filename:
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep=';')
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep=',')
             df['fecha_salida'] = pd.to_datetime(df['fecha_salida'])
             df['fecha_llegada'] = pd.to_datetime(df['fecha_llegada'])
             
             fig = px.timeline(df, x_start='fecha_salida', x_end='fecha_llegada', y='aeronave', color='aeronave',
                               hover_data={'numero_vuelo': True, 'origen': True, 'destino': True})
 
-            fig.update_traces(insidetextanchor='middle', textposition='inside', texttemplate='<b>%{hovertext}</b>')
-            fig.update_layout(xaxis_title='Hora', yaxis_title='Aeronave', title='Programación de Vuelos QT')
+            # Formatear las etiquetas en el gráfico
+            fig.update_traces(insidetextanchor='middle', textposition='inside', 
+                              texttemplate=('<b>%{customdata[0]}</b><br>' +  # Número de vuelo
+                                            '%{x}<br>' +  # Hora de salida y llegada
+                                            '%{y}'  # Aeronave
+                                           ))
+
+            # Actualizar el layout del gráfico
+            fig.update_layout(
+                xaxis_title='Hora', 
+                yaxis_title='Aeronave', 
+                title='Programación de Vuelos QT',
+                margin=dict(l=20, r=20, t=40, b=20)
+            )
+
             return fig
     except Exception as e:
         print(e)
@@ -75,19 +88,16 @@ def export_to_pdf(n_clicks, figure):
     if figure is None:
         return ""
 
-    fig = px.timeline(figure, x_start='fecha_salida', x_end='fecha_llegada', y='aeronave', color='aeronave',
-                      hover_data={'numero_vuelo': True, 'origen': True, 'destino': True})
-    
-    fig.update_traces(insidetextanchor='middle', textposition='inside', texttemplate='<b>%{hovertext}</b>')
-    fig.update_layout(xaxis_title='Hora', yaxis_title='Aeronave', title='Programación de Vuelos QT')
-
+    # Convertir la figura a HTML
+    fig = px.timeline(figure)
+    fig.update_layout(title_text='Programación de Vuelos QT')
     html_str = fig.to_html()
-    pdfkit.from_string(html_str, 'output.pdf')
 
-    return "/output.pdf"
+    # Convertir HTML a PDF
+    pdfkit.from_string(html_str, '/mnt/data/output.pdf')
+
+    return "/mnt/data/output.pdf"
 
 if __name__ == '__main__':
     app.run_server(debug=True, host='0.0.0.0', port=8050)
 
-if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0', port=8050)
