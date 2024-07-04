@@ -33,9 +33,7 @@ def process_and_plot(df, additional_text):
             rect_height = 0.2
             ax.broken_barh([(start, duration)], (i - rect_height/2, rect_height), facecolors='red')
             flight_text = vuelo['Flight']
-            additional_text_line = additional_text  # Texto adicional sobre el vuelo
             if text_fits(ax, flight_text, start, duration):
-                ax.text(start + duration / 2, i + 0.25, additional_text_line, ha='center', va='bottom', color='blue', fontsize=10)
                 ax.text(start + duration / 2, i, flight_text, ha='center', va='center', color='black', fontsize=8)
             else:
                 ax.text(start + duration / 2, i - rect_height, flight_text, ha='center', va='top', color='black', fontsize=8)
@@ -62,7 +60,7 @@ def process_and_plot(df, additional_text):
     plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.15)
     plt.xlabel('Hora')
     plt.ylabel('Aeronave')
-    plt.title(f'Programación de Vuelos QT')
+    plt.title(f'Programación de Vuelos QT {additional_text}')
 
     buf = io.BytesIO()
     plt.savefig(buf, format='pdf')
