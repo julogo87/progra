@@ -5,3 +5,4 @@ pdfkit
 matplotlib
 IPython
 ipywidgets
+ipywidgets
