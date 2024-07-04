@@ -40,3 +40,8 @@ button {
 button:hover {
     background-color: #45a049;
 }
+
+.handsontable {
+    width: 100%;
+    margin-bottom: 20px;
+}
