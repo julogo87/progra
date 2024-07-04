@@ -4,8 +4,6 @@ import matplotlib.dates as mdates
 from IPython.display import display
 import ipywidgets as widgets
 import io
-import os
-from tkinter import Tk, filedialog
 
 # Función para cargar el archivo CSV
 def upload_file():
@@ -33,7 +31,7 @@ def text_fits(ax, text, start, duration):
     return duration.total_seconds() / 3600 >= text_length_approx  # Convertir duración a horas
 
 # Función para procesar los datos y generar el gráfico
-def process_and_plot(uploader, additional_text, save_pdf=False, pdf_path=None):
+def process_and_plot(uploader, additional_text):
     df = read_uploaded_file(uploader)
     if df is not None:
         # Convertir las columnas de fecha a tipo datetime
@@ -100,9 +98,8 @@ def process_and_plot(uploader, additional_text, save_pdf=False, pdf_path=None):
         plt.ylabel('Aeronave')
         plt.title(f'Programación de Vuelos QT {additional_text}')  # Añadir el texto adicional al título
 
-        # Guardar el gráfico como un archivo PDF si se indica
-        if save_pdf and pdf_path:
-            plt.savefig(pdf_path, format='pdf')
+        # Guardar el gráfico como un archivo PDF
+        plt.savefig('programacion_vuelos_qt.pdf', format='pdf')
 
         # Mostrar el gráfico
         plt.show()
@@ -137,14 +134,7 @@ process_button.on_click(on_button_clicked)
 
 # Asignar la función al botón de exportar
 def on_export_button_clicked(b):
-    # Usar Tkinter para abrir un cuadro de diálogo de selección de carpeta
-    root = Tk()
-    root.withdraw()  # Ocultar la ventana principal de Tkinter
-    folder_selected = filedialog.askdirectory(title="Seleccionar carpeta para guardar el PDF")
-    if folder_selected:
-        pdf_path = os.path.join(folder_selected, 'programacion_vuelos_qt.pdf')
-        process_and_plot(uploader, title_text.value, save_pdf=True, pdf_path=pdf_path)
+    process_and_plot(uploader, title_text.value)
 
 export_button.on_click(on_export_button_clicked)
-
 
