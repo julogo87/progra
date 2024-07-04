@@ -65,9 +65,9 @@ def process_and_plot(df, additional_text):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        table_text = request.form['table_text']
+        table_data = request.form['table_data']
         additional_text = request.form.get('additional_text')
-        df = pd.read_csv(io.StringIO(table_text), sep='\t')
+        df = pd.read_json(table_data)
         pdf = process_and_plot(df, additional_text)
         return send_file(pdf, as_attachment=True, download_name='programacion_vuelos_qt.pdf', mimetype='application/pdf')
     return render_template('index.html')
