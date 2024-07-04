@@ -3,11 +3,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var hot = new Handsontable(container, {
         data: [],
         rowHeaders: true,
-        colHeaders: ['Flight', 'Date', 'ST', 'State', 'STD', 'STA', 'Best DT', 'Best AT', 'From', 'To', 'Reg.', 'Own / Sub', 'Delay', 'Pax(F/C/Y)'],
+        colHeaders: ['N', 'Flight', 'Date', 'ST', 'State', 'STD', 'STA', 'Best DT', 'Best AT', 'From', 'To', 'Reg.', 'Own / Sub', 'Delay', 'Pax(F/C/Y)'],
         contextMenu: true,
         minSpareRows: 1,
         columns: [
-            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
         ]
     });
 
