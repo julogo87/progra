@@ -137,4 +137,3 @@ def on_export_button_clicked(b):
     process_and_plot(uploader, title_text.value)
 
 export_button.on_click(on_export_button_clicked)
-
