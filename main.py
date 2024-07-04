@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, jsonify
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -12,8 +12,12 @@ def text_fits(ax, text, start, duration):
     return duration.total_seconds() / 3600 >= text_length_approx
 
 def process_and_plot(df, additional_text):
-    df['fecha_salida'] = pd.to_datetime(df['STD'], format='%Y-%m-%d %H:%M')
-    df['fecha_llegada'] = pd.to_datetime(df['STA'], format='%Y-%m-%d %H:%M')
+    try:
+        df['fecha_salida'] = pd.to_datetime(df['STD'], format='%Y-%m-%d %H:%M')
+        df['fecha_llegada'] = pd.to_datetime(df['STA'], format='%Y-%m-%d %H:%M')
+    except KeyError as e:
+        return None, f"Missing column in input data: {e}"
+
     order = ['N330QT', 'N331QT', 'N332QT', 'N334QT', 'N335QT', 'N336QT', 'N337QT']
     df['aeronave'] = pd.Categorical(df['Reg.'], categories=order, ordered=True)
     df = df.sort_values('aeronave', ascending=False)
@@ -60,7 +64,7 @@ def process_and_plot(df, additional_text):
     plt.savefig(buf, format='pdf')
     buf.seek(0)
     plt.close(fig)
-    return buf
+    return buf, None
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -68,10 +72,13 @@ def index():
         table_data = request.form['table_data']
         additional_text = request.form.get('additional_text')
         df = pd.read_json(table_data)
-        pdf = process_and_plot(df, additional_text)
+        pdf, error = process_and_plot(df, additional_text)
+        if error:
+            return jsonify({'error': error}), 400
         return send_file(pdf, as_attachment=True, download_name='programacion_vuelos_qt.pdf', mimetype='application/pdf')
     return render_template('index.html')
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
