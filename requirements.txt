@@ -2,9 +2,8 @@ dash
 pandas
 plotly
 pdfkit
-matplotlib.pyplot
-matplotlib.dates
-IPython.display
+matplotlib
+IPython
 ipywidgets
 io
 os
