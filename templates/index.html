@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Programación de Vuelos QT</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" href="https://handsontable.com/static/css/main.css">
-    <link rel="stylesheet" href="https://handsontable.com/static/css/handsontable.full.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
 </head>
 <body>
     <h1>Programación de Vuelos QT</h1>
@@ -18,7 +17,7 @@
         <input type="text" id="additional_text" name="additional_text" placeholder="Ingrese texto adicional para el título"><br><br>
         <button type="submit">Procesar tabla y descargar PDF</button>
     </form>
-    <script src="https://handsontable.com/static/js/handsontable.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
