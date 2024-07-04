@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programación de Vuelos QT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Programación de Vuelos QT</h1>
+    <form action="/" method="post" enctype="multipart/form-data">
+        <label for="file">Subir archivo CSV:</label>
+        <input type="file" id="file" name="file" accept=".csv" required><br><br>
+        <label for="additional_text">Texto adicional para el título:</label>
+        <input type="text" id="additional_text" name="additional_text" placeholder="Ingrese texto adicional para el título"><br><br>
+        <button type="submit">Procesar archivo y descargar PDF</button>
+    </form>
+</body>
+</html>
