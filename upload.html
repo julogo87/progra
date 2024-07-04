@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload CSV</title>
+</head>
+<body>
+    <h1>Cargar CSV y Generar PDF</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <label for="file">Seleccione un archivo CSV:</label>
+        <input type="file" name="file" id="file" accept=".csv" required><br><br>
+        <label for="title_text">Texto adicional para el título:</label>
+        <input type="text" name="title_text" id="title_text"><br><br>
+        <input type="submit" value="Generar PDF">
+    </form>
+</body>
+</html>
