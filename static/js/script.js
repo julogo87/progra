@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     var data = [
         ['Flight', 'Date', 'ST', 'State', 'STD', 'STA', 'Best DT', 'Best AT', 'From', 'To', 'Reg.', 'Own / Sub', 'Delay', 'Pax(F/C/Y)'],
-        ['','','','','','','','','','','','','','']
+        ['', '', '', '', '', '', '', '', '', '', '', '', '', '']
     ];
 
     var container = document.getElementById('table');
