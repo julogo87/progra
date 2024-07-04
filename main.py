@@ -31,7 +31,7 @@ def process_and_plot(df, additional_text):
             start = vuelo['fecha_salida']
             duration = vuelo['fecha_llegada'] - vuelo['fecha_salida']
             rect_height = 0.2
-            ax.broken_barh([(start, duration)], (i - rect_height/2, rect_height), facecolors='red')
+            ax.broken_barh([(start, duration)], (i - rect_height/2, rect_height), facecolors='lightblue')
             flight_text = vuelo['Flight']
             if text_fits(ax, flight_text, start, duration):
                 ax.text(start + duration / 2, i, flight_text, ha='center', va='center', color='black', fontsize=8)
