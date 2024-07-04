@@ -5,6 +5,4 @@ pdfkit
 matplotlib
 IPython
 ipywidgets
-io
-os
 tkinter
