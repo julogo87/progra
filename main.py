@@ -13,10 +13,12 @@ def text_fits(ax, text, start, duration):
 
 def process_and_plot(df, additional_text):
     try:
-        df['fecha_salida'] = pd.to_datetime(df['STD'], format='%Y-%m-%d %H:%M')
-        df['fecha_llegada'] = pd.to_datetime(df['STA'], format='%Y-%m-%d %H:%M')
+        df['fecha_salida'] = pd.to_datetime(df['STD'], format='%d/%m/%Y %H:%M', dayfirst=True)
+        df['fecha_llegada'] = pd.to_datetime(df['STA'], format='%d/%m/%Y %H:%M', dayfirst=True)
     except KeyError as e:
         return None, f"Missing column in input data: {e}"
+    except ValueError as e:
+        return None, f"Date conversion error: {e}"
 
     order = ['N330QT', 'N331QT', 'N332QT', 'N334QT', 'N335QT', 'N336QT', 'N337QT']
     df['aeronave'] = pd.Categorical(df['Reg.'], categories=order, ordered=True)
@@ -71,7 +73,11 @@ def index():
     if request.method == 'POST':
         table_data = request.form['table_data']
         additional_text = request.form.get('additional_text')
-        df = pd.read_json(table_data)
+        try:
+            df = pd.read_json(table_data)
+        except ValueError as e:
+            return jsonify({'error': f"JSON parsing error: {e}"}), 400
+
         pdf, error = process_and_plot(df, additional_text)
         if error:
             return jsonify({'error': error}), 400
@@ -81,4 +87,5 @@ def index():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
 
