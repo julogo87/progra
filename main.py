@@ -13,8 +13,8 @@ def text_fits(ax, text, start, duration):
 
 def process_and_plot(df, additional_text):
     try:
-        df['fecha_salida'] = pd.to_datetime(df['STD'], format='%d/%m/%Y %H:%M', dayfirst=True)
-        df['fecha_llegada'] = pd.to_datetime(df['STA'], format='%d/%m/%Y %H:%M', dayfirst=True)
+        df['fecha_salida'] = pd.to_datetime(df['STD'], format='%d%b %H:%M', dayfirst=True)
+        df['fecha_llegada'] = pd.to_datetime(df['STA'], format='%d%b %H:%M', dayfirst=True)
     except KeyError as e:
         return None, f"Missing column in input data: {e}"
     except ValueError as e:
