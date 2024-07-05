@@ -123,7 +123,7 @@ def process_and_plot(df, additional_text):
 
     buf = io.BytesIO()
     workbook.save(buf)
-    buf.seek 0
+    buf.seek (0)
 
     return buf, None
 
