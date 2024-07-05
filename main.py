@@ -33,7 +33,8 @@ def process_and_plot(df, additional_text):
 
     header = ['Aeronave', 'Fecha Salida', 'Fecha Llegada', 'Duración', 'Flight', 'From', 'To'] + \
              [(start_time + pd.Timedelta(minutes=15 * i)).strftime('%H:%M') for i in range(num_columns)]
-    sheet.append(header)
+    for col in range(len(header)):
+        sheet.cell(row=3, column=col + 1).value = header[col]
 
     # Ajustar el ancho de las columnas
     for col in range(8, 8 + num_columns):
@@ -41,13 +42,16 @@ def process_and_plot(df, additional_text):
 
     fill = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
 
+    current_row = 4
+
     for aeronave in order:
         vuelos_aeronave = df[df['aeronave'] == aeronave]
         if vuelos_aeronave.empty:
             continue
-        
+
         row_data = [aeronave] + [''] * (7 + num_columns)
-        row_idx = sheet.max_row + 1
+        sheet.append([''] * (7 + num_columns))
+        sheet.append([''] * (7 + num_columns))
         sheet.append(row_data)
 
         for _, vuelo in vuelos_aeronave.iterrows():
@@ -57,21 +61,25 @@ def process_and_plot(df, additional_text):
             duration_minutes = duration.total_seconds() / 60
             start_col = 8 + int((start - start_time).total_seconds() / 900)
             end_col = start_col + int(duration_minutes / 15)
-            
+
             # Colorear las celdas de la franja horaria
             for col in range(start_col, end_col + 1):
-                sheet.cell(row=row_idx, column=col).fill = fill
+                sheet.cell(row=current_row + 2, column=col).fill = fill
 
             # Colocar el número de vuelo en la celda central de la franja
             mid_col = start_col + (end_col - start_col) // 2
-            sheet.cell(row=row_idx, column=mid_col).value = vuelo['Flight']
-            sheet.cell(row=row_idx, column=mid_col).alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
+            sheet.cell(row=current_row + 2, column=mid_col).value = vuelo['Flight']
+            sheet.cell(row=current_row + 2, column=mid_col).alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
 
             # Colocar el origen una celda antes de iniciar la franja
-            sheet.cell(row=row_idx, column=start_col - 1).value = vuelo['From']
+            sheet.cell(row=current_row + 2, column=start_col - 1).value = vuelo['From']
 
             # Colocar el destino una celda después de la franja
-            sheet.cell(row=row_idx, column=end_col + 1).value = vuelo['To']
+            sheet.cell(row=current_row + 2, column=end_col + 1).value = vuelo['To']
+
+        sheet.append([''] * (7 + num_columns))
+        sheet.append([''] * (7 + num_columns))
+        current_row += 9
 
     buf = io.BytesIO()
     workbook.save(buf)
