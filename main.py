@@ -32,7 +32,7 @@ def process_and_plot(df, additional_text):
     sheet['B1'].alignment = Alignment(horizontal='center', vertical='center')
     sheet['B1'].font = Font(size=22, bold=True)
 
-    sheet.merge_cells('B2:Z2')
+    sheet.merge_cells('B2:AX2')
     sheet['B2'] = additional_text
     sheet['B2'].alignment = Alignment(horizontal='center', vertical='center')
     sheet['B2'].font = Font(size=22, italic=True)
