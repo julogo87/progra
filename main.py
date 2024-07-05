@@ -160,6 +160,9 @@ def process_and_plot(df, additional_text):
         sheet.append([''] * (1 + num_columns))
         base_row += 10  # Mover a la siguiente fila base
 
+    # Configurar el zoom del PDF al 65%
+    sheet.sheet_view.zoomScale = 65
+
     buf = io.BytesIO()
     workbook.save(buf)
     buf.seek(0)
