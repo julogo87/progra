@@ -37,19 +37,16 @@ def process_and_plot(df, additional_text):
     sheet['H2'].alignment = Alignment(horizontal='center', vertical='center')
     sheet['H2'].font = Font(size=12, italic=True)
 
-    # Escribir la cabecera
+    # Escribir la cabecera con horas completas en negrita
     start_time = df['fecha_salida'].min().floor('H')
     end_time = df['fecha_llegada'].max().ceil('H')
     num_columns = int((end_time - start_time).total_seconds() / 900) + 1  # 900 segundos = 15 minutos
 
-    header = ['Aeronave', 'Fecha Salida', 'Fecha Llegada', 'Duración', 'Flight', 'From', 'To'] + \
-             [(start_time + pd.Timedelta(minutes=15 * i)).strftime('%H:%M') for i in range(num_columns)]
-    hour_header = ['Aeronave', 'Fecha Salida', 'Fecha Llegada', 'Duración', 'Flight', 'From', 'To'] + \
+    hour_header = [''] * 7 + \
                   [((start_time + pd.Timedelta(minutes=15 * i)).strftime('%H:%M') if (start_time + pd.Timedelta(minutes=15 * i)).minute == 0 else '') for i in range(num_columns)]
-
-    # Escribir las horas en la fila 3
     for col in range(len(hour_header)):
         sheet.cell(row=3, column=col + 8).value = hour_header[col]
+        sheet.cell(row=3, column=col + 8).font = Font(bold=True)
 
     # Ajustar el ancho de las columnas
     for col in range(8, 8 + num_columns):
@@ -66,6 +63,10 @@ def process_and_plot(df, additional_text):
                          right=Side(style='thin'), 
                          top=Side(style='thin'), 
                          bottom=Side(style='thin'))
+    thick_border = Border(left=Side(style='thick'),
+                          right=Side(style='thick'),
+                          top=Side(style='thick'),
+                          bottom=Side(style='thick'))
 
     # Combinar celdas y formato de la columna A
     merge_ranges = [(6, 15), (16, 24), (25, 33), (34, 42), (43, 51), (52, 60), (61, 69)]
@@ -75,6 +76,9 @@ def process_and_plot(df, additional_text):
         cell.value = order[i]
         cell.alignment = Alignment(horizontal='center', vertical='center', text_rotation=90)
         cell.font = Font(size=28, bold=True)
+        # Dibujar línea vertical en la columna A desde A6 hacia abajo
+        for row in range(start_row, end_row + 1):
+            sheet.cell(row=row, column=1).border = Border(left=Side(style='thin'))
 
     # Agregar líneas horizontales
     for row in [6, 16, 25, 34, 43, 52, 61, 69]:
@@ -89,7 +93,7 @@ def process_and_plot(df, additional_text):
         if vuelos_aeronave.empty:
             continue
 
-        row_data = [aeronave] + [''] * (7 + num_columns)
+        row_data = [''] * (7 + num_columns)
         sheet.append([''] * (7 + num_columns))
         sheet.append([''] * (7 + num_columns))
         sheet.append(row_data)
@@ -102,11 +106,14 @@ def process_and_plot(df, additional_text):
             start_col = 8 + int((start - start_time).total_seconds() / 900)
             end_col = start_col + int(duration_minutes / 15)
 
-            # Colorear las celdas de la franja horaria
+            # Colorear las celdas de la franja horaria y añadir bordes
             for col in range(start_col, end_col + 1):
                 sheet.cell(row=current_row + 1, column=col).fill = fill_blue
                 sheet.cell(row=current_row + 2, column=col).fill = fill_blue
                 sheet.cell(row=current_row + 3, column=col).fill = fill_yellow
+                sheet.cell(row=current_row + 1, column=col).border = thick_border
+                sheet.cell(row=current_row + 2, column=col).border = thick_border
+                sheet.cell(row=current_row + 3, column=col).border = thick_border
 
             # Colocar el número de vuelo en la celda central de la franja
             mid_col = start_col + (end_col - start_col) // 2
