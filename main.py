@@ -70,13 +70,14 @@ def process_and_plot(df, additional_text):
         cell.value = order[i]
         cell.alignment = Alignment(horizontal='center', vertical='center', text_rotation=90)
         cell.font = Font(size=28, bold=True)
-        cell.fill = fill_light_gray if i == 0 else None
+        if i == 0 or i == 6:
+            for row in range(start_row, end_row + 1):
+                sheet.cell(row=row, column=1).fill = fill_light_gray
+
         # Dibujar línea vertical en la columna A desde A6 hacia abajo
         for row in range(start_row, end_row + 1):
             sheet.cell(row=row, column=1).border = Border(left=Side(style='thin'))
-            if row == 69:
-                sheet.cell(row=row, column=1).fill = fill_light_gray
-
+            
     # Línea vertical gruesa a la derecha de las celdas A6 a A69
     for row in range(6, 70):
         cell = sheet.cell(row=row, column=2)
