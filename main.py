@@ -24,7 +24,7 @@ def process_and_plot(df, additional_text):
 
     workbook = openpyxl.Workbook()
     sheet = workbook.active
-    sheet.title = f'Programación de Vuelos QT {additional_text}'
+    sheet.title = 'Programación de Vuelos QT'
 
     # Escribir el título y el texto adicional
     sheet.merge_cells('B1:AX1')
@@ -57,10 +57,10 @@ def process_and_plot(df, additional_text):
     fill_blue = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
     fill_yellow = PatternFill(start_color="FFFFE0", end_color="FFFFE0", fill_type="solid")
     fill_light_gray = PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
-    thick_border = Border(left=Side(style='medium'),
-                          right=Side(style='medium'),
-                          top=Side(style='medium'),
-                          bottom=Side(style='medium'))
+    medium_border = Border(left=Side(style='medium'),
+                           right=Side(style='medium'),
+                           top=Side(style='medium'),
+                           bottom=Side(style='medium'))
 
     # Combinar celdas y formato de la columna A
     merge_ranges = [(6, 15), (16, 24), (25, 33), (34, 42), (43, 51), (52, 60), (61, 69)]
@@ -70,13 +70,11 @@ def process_and_plot(df, additional_text):
         cell.value = order[i]
         cell.alignment = Alignment(horizontal='center', vertical='center', text_rotation=90)
         cell.font = Font(size=28, bold=True)
-        if i == 0 or i == 6:
-            for row in range(start_row, end_row + 1):
-                sheet.cell(row=row, column=1).fill = fill_light_gray
 
         # Dibujar borde externo grueso en los rangos especificados
         for row in range(start_row, end_row + 1):
-            sheet.cell(row=row, column=1).border = thick_border if row in {6, 15, 16, 24, 25, 33, 34, 42, 43, 51, 52, 60, 61, 69} else Border(left=Side(style='thin'))
+            sheet.cell(row=row, column=1).border = medium_border if row in {6, 15, 16, 24, 25, 33, 34, 42, 43, 51, 52, 60, 61, 69} else Border(left=Side(style='thin'))
+            sheet.cell(row=row, column=1).fill = fill_light_gray
 
     # Línea vertical negra a la derecha de las celdas A5 a A69
     for row in range(5, 70):
