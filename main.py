@@ -49,7 +49,7 @@ def process_and_plot(df, additional_text):
         sheet.cell(row=5, column=col + 2).font = Font(bold=True, color="8B0000")  # Vinotinto
         sheet.cell(row=5, column=col + 2).alignment = Alignment(horizontal='center', vertical='center')
 
-    # Ajustar el ancho de las columnas
+    # Ajustar el ancho de las columnas desde B
     for col in range(2, 2 + num_columns):
         sheet.column_dimensions[get_column_letter(col)].width = 2.5
 
@@ -57,10 +57,10 @@ def process_and_plot(df, additional_text):
     fill_blue = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
     fill_yellow = PatternFill(start_color="FFFFE0", end_color="FFFFE0", fill_type="solid")
     fill_light_gray = PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
-    thick_border = Border(left=Side(style='thick'),
-                          right=Side(style='thick'),
-                          top=Side(style='thick'),
-                          bottom=Side(style='thick'))
+    thick_border = Border(left=Side(style='medium'),
+                          right=Side(style='medium'),
+                          top=Side(style='medium'),
+                          bottom=Side(style='medium'))
 
     # Combinar celdas y formato de la columna A
     merge_ranges = [(6, 15), (16, 24), (25, 33), (34, 42), (43, 51), (52, 60), (61, 69)]
@@ -78,17 +78,17 @@ def process_and_plot(df, additional_text):
         for row in range(start_row, end_row + 1):
             sheet.cell(row=row, column=1).border = thick_border if row in {6, 15, 16, 24, 25, 33, 34, 42, 43, 51, 52, 60, 61, 69} else Border(left=Side(style='thin'))
 
-    # Línea vertical gruesa a la derecha de las celdas A6 a A69
-    for row in range(6, 70):
+    # Línea vertical negra a la derecha de las celdas A5 a A69
+    for row in range(5, 70):
         cell = sheet.cell(row=row, column=2)
-        cell.border = Border(left=Side(style='thick'))
+        cell.border = Border(left=Side(style='thick', color='000000'))
 
     # Agregar líneas horizontales más gruesas
-    thick_horizontal_border = Border(top=Side(style='thick'))
+    medium_horizontal_border = Border(top=Side(style='medium'))
     for row in [6, 16, 25, 34, 43, 52, 61, 70]:  # Mover línea de 69 a 70
         for col in range(1, sheet.max_column + 1):
             cell = sheet.cell(row=row, column=col)
-            cell.border = thick_horizontal_border
+            cell.border = medium_horizontal_border
 
     current_row_offsets = {'N331QT': 0, 'N332QT': -1, 'N334QT': -2, 'N335QT': -3, 'N336QT': -4, 'N337QT': -5}
     base_row = 7  # Iniciar a partir de la fila 7
@@ -123,16 +123,16 @@ def process_and_plot(df, additional_text):
             # Agregar un recuadro negro alrededor de toda la franja
             for col in range(start_col, end_col + 1):
                 if col == start_col:
-                    sheet.cell(row=current_row + 1, column=col).border = Border(left=Side(style='thick'), top=Side(style='thick'))
-                    sheet.cell(row=current_row + 2, column=col).border = Border(left=Side(style='thick'))
-                    sheet.cell(row=current_row + 3, column=col).border = Border(left=Side(style='thick'), bottom=Side(style='thick'))
+                    sheet.cell(row=current_row + 1, column=col).border = Border(left=Side(style='medium'), top=Side(style='medium'))
+                    sheet.cell(row=current_row + 2, column=col).border = Border(left=Side(style='medium'))
+                    sheet.cell(row=current_row + 3, column=col).border = Border(left=Side(style='medium'), bottom=Side(style='medium'))
                 elif col == end_col:
-                    sheet.cell(row=current_row + 1, column=col).border = Border(right=Side(style='thick'), top=Side(style='thick'))
-                    sheet.cell(row=current_row + 2, column=col).border = Border(right=Side(style='thick'))
-                    sheet.cell(row=current_row + 3, column=col).border = Border(right=Side(style='thick'), bottom=Side(style='thick'))
+                    sheet.cell(row=current_row + 1, column=col).border = Border(right=Side(style='medium'), top=Side(style='medium'))
+                    sheet.cell(row=current_row + 2, column=col).border = Border(right=Side(style='medium'))
+                    sheet.cell(row=current_row + 3, column=col).border = Border(right=Side(style='medium'), bottom=Side(style='medium'))
                 else:
-                    sheet.cell(row=current_row + 1, column=col).border = Border(top=Side(style='thick'))
-                    sheet.cell(row=current_row + 3, column=col).border = Border(bottom=Side(style='thick'))
+                    sheet.cell(row=current_row + 1, column=col).border = Border(top=Side(style='medium'))
+                    sheet.cell(row=current_row + 3, column=col).border = Border(bottom=Side(style='medium'))
 
             # Colocar el número de vuelo en la celda central de la franja y en negrita
             mid_col = start_col + (end_col - start_col) // 2
