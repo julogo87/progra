@@ -30,12 +30,12 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('B1:Z1')
     sheet['B1'] = 'PROGRAMACION DE VUELOS Y TRIPULACIONES'
     sheet['B1'].alignment = Alignment(horizontal='center', vertical='center')
-    sheet['B1'].font = Font(size=14, bold=True)
+    sheet['B1'].font = Font(size=22, bold=True)  # Cambiado a tamaño 22
 
     sheet.merge_cells('B2:Z2')
     sheet['B2'] = additional_text
     sheet['B2'].alignment = Alignment(horizontal='center', vertical='center')
-    sheet['B2'].font = Font(size=12, italic=True)
+    sheet['B2'].font = Font(size=22, italic=True)  # Cambiado a tamaño 22
 
     # Escribir la cabecera con horas completas en negrita
     start_time = df['fecha_salida'].min().floor('H')
@@ -72,11 +72,12 @@ def process_and_plot(df, additional_text):
         for row in range(start_row, end_row + 1):
             sheet.cell(row=row, column=1).border = Border(left=Side(style='thin'))
 
-    # Agregar líneas horizontales
+    # Agregar líneas horizontales más gruesas
+    thick_horizontal_border = Border(top=Side(style='thick'))
     for row in [6, 16, 25, 34, 43, 52, 61, 70]:  # Mover línea de 69 a 70
         for col in range(1, sheet.max_column + 1):
             cell = sheet.cell(row=row, column=col)
-            cell.border = Border(top=Side(style='thin'))
+            cell.border = thick_horizontal_border
 
     current_row = 7  # Iniciar a partir de la fila 7
 
@@ -104,10 +105,19 @@ def process_and_plot(df, additional_text):
                 sheet.cell(row=current_row + 2, column=col).fill = fill_blue
                 sheet.cell(row=current_row + 3, column=col).fill = fill_yellow
 
-                # Agregar un recuadro negro alrededor de cada franja
-                sheet.cell(row=current_row + 1, column=col).border = thick_border
-                sheet.cell(row=current_row + 2, column=col).border = thick_border
-                sheet.cell(row=current_row + 3, column=col).border = thick_border
+            # Agregar un recuadro negro alrededor de toda la franja
+            for col in range(start_col, end_col + 1):
+                if col == start_col:
+                    sheet.cell(row=current_row + 1, column=col).border = Border(left=Side(style='thick'), top=Side(style='thick'))
+                    sheet.cell(row=current_row + 2, column=col).border = Border(left=Side(style='thick'))
+                    sheet.cell(row=current_row + 3, column=col).border = Border(left=Side(style='thick'), bottom=Side(style='thick'))
+                elif col == end_col:
+                    sheet.cell(row=current_row + 1, column=col).border = Border(right=Side(style='thick'), top=Side(style='thick'))
+                    sheet.cell(row=current_row + 2, column=col).border = Border(right=Side(style='thick'))
+                    sheet.cell(row=current_row + 3, column=col).border = Border(right=Side(style='thick'), bottom=Side(style='thick'))
+                else:
+                    sheet.cell(row=current_row + 1, column=col).border = Border(top=Side(style='thick'))
+                    sheet.cell(row=current_row + 3, column=col).border = Border(bottom=Side(style='thick'))
 
             # Colocar el número de vuelo en la celda central de la franja
             mid_col = start_col + (end_col - start_col) // 2
@@ -118,11 +128,13 @@ def process_and_plot(df, additional_text):
             sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
             sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%H:%M')
 
-            # Colocar el destino en la celda superior derecha de la franja
-            sheet.cell(row=current_row + 1, column=end_col).value = vuelo['To']
+            # Colocar el destino una celda antes y combinar con la siguiente celda
+            sheet.cell(row=current_row + 1, column=end_col - 1).value = vuelo['To']
+            sheet.merge_cells(start_row=current_row + 1, start_column=end_col - 1, end_row=current_row + 1, end_column=end_col)
 
-            # Colocar la hora de llegada una celda atrás en la franja
+            # Colocar la hora de llegada una celda atrás en la franja y combinar con la siguiente celda
             sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
+            sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 1, end_row=current_row + 2, end_column=end_col)
 
         sheet.append([''] * (1 + num_columns))
         sheet.append([''] * (1 + num_columns))
