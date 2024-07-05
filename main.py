@@ -55,6 +55,10 @@ def process_and_plot(df, additional_text):
     # Formatos y rellenos
     fill_blue = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
     fill_yellow = PatternFill(start_color="FFFFE0", end_color="FFFFE0", fill_type="solid")
+    thin_border = Border(left=Side(style='thin'), 
+                         right=Side(style='thin'), 
+                         top=Side(style='thin'), 
+                         bottom=Side(style='thin'))
 
     # Combinar celdas y formato de la columna A
     merge_ranges = [(6, 15), (16, 24), (25, 33), (34, 42), (43, 51), (52, 60), (61, 69)]
@@ -119,7 +123,7 @@ def process_and_plot(df, additional_text):
 
     buf = io.BytesIO()
     workbook.save(buf)
-    buf.seek(0)
+    buf.seek 0
 
     return buf, None
 
@@ -142,3 +146,4 @@ def index():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
