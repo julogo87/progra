@@ -61,7 +61,7 @@ def process_and_plot(df, additional_text):
                            right=Side(style='medium'),
                            top=Side(style='medium'),
                            bottom=Side(style='medium'))
-    red_vertical_border = Border(left=Side(style='thick', color='FF0000'))
+    dashed_red_border = Border(left=Side(style='dashed', color='FF0000'))
 
     # Combinar celdas y formato de la columna A
     merge_ranges = [(6, 15), (16, 24), (25, 33), (34, 42), (43, 51), (52, 60), (61, 69)]
@@ -93,7 +93,7 @@ def process_and_plot(df, additional_text):
     for col in range(2, 2 + num_columns):
         if sheet.cell(row=5, column=col).value == "05:00":
             for row in range(5, 70):
-                sheet.cell(row=row, column=col).border = red_vertical_border
+                sheet.cell(row=row, column=col - 1).border = dashed_red_border
 
     current_row_offsets = {'N331QT': 0, 'N332QT': -1, 'N334QT': -2, 'N335QT': -3, 'N336QT': -4, 'N337QT': -5}
     base_row = 7  # Iniciar a partir de la fila 7
