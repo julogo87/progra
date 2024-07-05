@@ -35,29 +35,43 @@ def process_and_plot(df, additional_text):
              [(start_time + pd.Timedelta(minutes=15 * i)).strftime('%H:%M') for i in range(num_columns)]
     sheet.append(header)
 
+    # Ajustar el ancho de las columnas
+    for col in range(8, 8 + num_columns):
+        sheet.column_dimensions[get_column_letter(col)].width = 4.3  # 32 píxeles aproximadamente
+
     fill = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
 
-    for _, vuelo in df.iterrows():
-        aeronave = vuelo['aeronave']
-        start = vuelo['fecha_salida']
-        end = vuelo['fecha_llegada']
-        duration = end - start
-        duration_minutes = duration.total_seconds() / 60
-        duration_str = f"{int(duration_minutes // 60):02}:{int(duration_minutes % 60):02}"
-        row_data = [aeronave, start.strftime('%d-%b %H:%M'), end.strftime('%d-%b %H:%M'), duration_str, vuelo['Flight'], vuelo['From'], vuelo['To']] + \
-                   [''] * num_columns
+    for aeronave in order:
+        vuelos_aeronave = df[df['aeronave'] == aeronave]
+        if vuelos_aeronave.empty:
+            continue
+        
+        row_data = [aeronave] + [''] * (7 + num_columns)
         row_idx = sheet.max_row + 1
         sheet.append(row_data)
 
-        start_col = 8 + int((start - start_time).total_seconds() / 900)
-        end_col = start_col + int(duration_minutes / 15)
+        for _, vuelo in vuelos_aeronave.iterrows():
+            start = vuelo['fecha_salida']
+            end = vuelo['fecha_llegada']
+            duration = end - start
+            duration_minutes = duration.total_seconds() / 60
+            start_col = 8 + int((start - start_time).total_seconds() / 900)
+            end_col = start_col + int(duration_minutes / 15)
+            
+            # Colorear las celdas de la franja horaria
+            for col in range(start_col, end_col + 1):
+                sheet.cell(row=row_idx, column=col).fill = fill
 
-        for col in range(start_col, end_col + 1):
-            sheet.cell(row=row_idx, column=col).fill = fill
+            # Colocar el número de vuelo en la celda central de la franja
+            mid_col = start_col + (end_col - start_col) // 2
+            sheet.cell(row=row_idx, column=mid_col).value = vuelo['Flight']
+            sheet.cell(row=row_idx, column=mid_col).alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
 
-        mid_col = start_col + (end_col - start_col) // 2
-        sheet.cell(row=row_idx, column=mid_col).value = vuelo['Flight']
-        sheet.cell(row=row_idx, column=mid_col).alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
+            # Colocar el origen una celda antes de iniciar la franja
+            sheet.cell(row=row_idx, column=start_col - 1).value = vuelo['From']
+
+            # Colocar el destino una celda después de la franja
+            sheet.cell(row=row_idx, column=end_col + 1).value = vuelo['To']
 
     buf = io.BytesIO()
     workbook.save(buf)
