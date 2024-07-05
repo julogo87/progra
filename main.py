@@ -55,10 +55,10 @@ def process_and_plot(df, additional_text):
     # Formatos y rellenos
     fill_blue = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
     fill_yellow = PatternFill(start_color="FFFFE0", end_color="FFFFE0", fill_type="solid")
-    thin_border = Border(left=Side(style='thin'), 
-                         right=Side(style='thin'), 
-                         top=Side(style='thin'), 
-                         bottom=Side(style='thin'))
+    thick_border = Border(left=Side(style='thick'),
+                          right=Side(style='thick'),
+                          top=Side(style='thick'),
+                          bottom=Side(style='thick'))
 
     # Combinar celdas y formato de la columna A
     merge_ranges = [(6, 15), (16, 24), (25, 33), (34, 42), (43, 51), (52, 60), (61, 69)]
@@ -73,7 +73,7 @@ def process_and_plot(df, additional_text):
             sheet.cell(row=row, column=1).border = Border(left=Side(style='thin'))
 
     # Agregar líneas horizontales
-    for row in [6, 16, 25, 34, 43, 52, 61, 69]:
+    for row in [6, 16, 25, 34, 43, 52, 61, 70]:  # Mover línea de 69 a 70
         for col in range(1, sheet.max_column + 1):
             cell = sheet.cell(row=row, column=col)
             cell.border = Border(top=Side(style='thin'))
@@ -104,6 +104,11 @@ def process_and_plot(df, additional_text):
                 sheet.cell(row=current_row + 2, column=col).fill = fill_blue
                 sheet.cell(row=current_row + 3, column=col).fill = fill_yellow
 
+                # Agregar un recuadro negro alrededor de cada franja
+                sheet.cell(row=current_row + 1, column=col).border = thick_border
+                sheet.cell(row=current_row + 2, column=col).border = thick_border
+                sheet.cell(row=current_row + 3, column=col).border = thick_border
+
             # Colocar el número de vuelo en la celda central de la franja
             mid_col = start_col + (end_col - start_col) // 2
             sheet.cell(row=current_row + 2, column=mid_col).value = vuelo['Flight']
@@ -113,9 +118,11 @@ def process_and_plot(df, additional_text):
             sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
             sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%H:%M')
 
-            # Colocar el destino y la hora de llegada en la celda superior derecha de la franja
+            # Colocar el destino en la celda superior derecha de la franja
             sheet.cell(row=current_row + 1, column=end_col).value = vuelo['To']
-            sheet.cell(row=current_row + 2, column=end_col).value = vuelo['fecha_llegada'].strftime('%H:%M')
+
+            # Colocar la hora de llegada una celda atrás en la franja
+            sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
 
         sheet.append([''] * (1 + num_columns))
         sheet.append([''] * (1 + num_columns))
@@ -123,7 +130,7 @@ def process_and_plot(df, additional_text):
 
     buf = io.BytesIO()
     workbook.save(buf)
-    buf.seek (0)
+    buf.seek(0)
 
     return buf, None
 
@@ -146,4 +153,3 @@ def index():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-
