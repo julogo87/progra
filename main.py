@@ -27,15 +27,15 @@ def process_and_plot(df, additional_text):
     sheet.title = f'Programación de Vuelos QT {additional_text}'
 
     # Escribir el título y el texto adicional
-    sheet.merge_cells('B1:Z1')
+    sheet.merge_cells('B1:AX1')
     sheet['B1'] = 'PROGRAMACION DE VUELOS Y TRIPULACIONES'
     sheet['B1'].alignment = Alignment(horizontal='center', vertical='center')
-    sheet['B1'].font = Font(size=22, bold=True)  # Cambiado a tamaño 22
+    sheet['B1'].font = Font(size=22, bold=True)
 
     sheet.merge_cells('B2:Z2')
     sheet['B2'] = additional_text
     sheet['B2'].alignment = Alignment(horizontal='center', vertical='center')
-    sheet['B2'].font = Font(size=22, italic=True)  # Cambiado a tamaño 22
+    sheet['B2'].font = Font(size=22, italic=True)
 
     # Escribir la cabecera con horas completas en negrita y color vinotinto
     start_time = df['fecha_salida'].min().floor('H')
@@ -74,10 +74,10 @@ def process_and_plot(df, additional_text):
             for row in range(start_row, end_row + 1):
                 sheet.cell(row=row, column=1).fill = fill_light_gray
 
-        # Dibujar línea vertical en la columna A desde A6 hacia abajo
+        # Dibujar borde externo grueso en los rangos especificados
         for row in range(start_row, end_row + 1):
-            sheet.cell(row=row, column=1).border = Border(left=Side(style='thin'))
-            
+            sheet.cell(row=row, column=1).border = thick_border if row in {6, 15, 16, 24, 25, 33, 34, 42, 43, 51, 52, 60, 61, 69} else Border(left=Side(style='thin'))
+
     # Línea vertical gruesa a la derecha de las celdas A6 a A69
     for row in range(6, 70):
         cell = sheet.cell(row=row, column=2)
@@ -90,12 +90,16 @@ def process_and_plot(df, additional_text):
             cell = sheet.cell(row=row, column=col)
             cell.border = thick_horizontal_border
 
-    current_row = 7  # Iniciar a partir de la fila 7
+    current_row_offsets = {'N331QT': 1, 'N332QT': 2, 'N334QT': 4, 'N335QT': 6, 'N336QT': 8, 'N337QT': 10}
+    base_row = 7  # Iniciar a partir de la fila 7
 
     for aeronave in order:
         vuelos_aeronave = df[df['aeronave'] == aeronave]
         if vuelos_aeronave.empty:
             continue
+
+        offset = current_row_offsets.get(aeronave, 0)
+        current_row = base_row + offset
 
         row_data = [''] * (1 + num_columns)
         sheet.append([''] * (1 + num_columns))
@@ -140,12 +144,13 @@ def process_and_plot(df, additional_text):
             sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
             sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%H:%M')
 
-            # Colocar el destino una celda antes y combinar con la siguiente celda
+            # Colocar el destino y la hora de llegada una celda antes y combinar con la siguiente celda
             sheet.cell(row=current_row + 1, column=end_col - 1).value = vuelo['To']
+            sheet.cell(row=current_row + 1, column=end_col - 1).alignment = Alignment(horizontal='right')
             sheet.merge_cells(start_row=current_row + 1, start_column=end_col - 1, end_row=current_row + 1, end_column=end_col)
 
-            # Colocar la hora de llegada una celda atrás en la franja y combinar con la siguiente celda
             sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
+            sheet.cell(row=current_row + 2, column=end_col - 1).alignment = Alignment(horizontal='right')
             sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 1, end_row=current_row + 2, end_column=end_col)
 
             # Crear una celda combinada debajo de la franja
@@ -180,4 +185,3 @@ def index():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-
