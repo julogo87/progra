@@ -33,8 +33,12 @@ def process_and_plot(df, additional_text):
 
     header = ['Aeronave', 'Fecha Salida', 'Fecha Llegada', 'Duración', 'Flight', 'From', 'To'] + \
              [(start_time + pd.Timedelta(minutes=15 * i)).strftime('%H:%M') for i in range(num_columns)]
-    for col in range(len(header)):
-        sheet.cell(row=3, column=col + 1).value = header[col]
+    hour_header = ['Aeronave', 'Fecha Salida', 'Fecha Llegada', 'Duración', 'Flight', 'From', 'To'] + \
+                  [((start_time + pd.Timedelta(minutes=15 * i)).strftime('%H:%M') if (start_time + pd.Timedelta(minutes=15 * i)).minute == 0 else '') for i in range(num_columns)]
+
+    # Escribir las horas en la fila 3
+    for col in range(len(hour_header)):
+        sheet.cell(row=3, column=col + 1).value = hour_header[col]
 
     # Ajustar el ancho de las columnas
     for col in range(8, 8 + num_columns):
@@ -43,7 +47,7 @@ def process_and_plot(df, additional_text):
     fill_blue = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
     fill_yellow = PatternFill(start_color="FFFFE0", end_color="FFFFE0", fill_type="solid")
 
-    current_row = 4
+    current_row = 8  # Iniciar a partir de la fila 8
 
     for aeronave in order:
         vuelos_aeronave = df[df['aeronave'] == aeronave]
@@ -74,17 +78,13 @@ def process_and_plot(df, additional_text):
             sheet.cell(row=current_row + 2, column=mid_col).value = vuelo['Flight']
             sheet.cell(row=current_row + 2, column=mid_col).alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
 
-            # Colocar el origen en la primera celda de la franja
-            sheet.cell(row=current_row + 1, column=start_col - 1).value = vuelo['From']
+            # Colocar el origen y la hora de salida en la primera celda de la franja
+            sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
+            sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%H:%M')
 
-            # Colocar la hora de salida debajo del origen
-            sheet.cell(row=current_row + 2, column=start_col - 1).value = vuelo['fecha_salida'].strftime('%H:%M')
-
-            # Colocar el destino en la celda superior derecha de la franja
-            sheet.cell(row=current_row + 1, column=end_col + 1).value = vuelo['To']
-
-            # Colocar la hora de llegada debajo del destino
-            sheet.cell(row=current_row + 2, column=end_col + 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
+            # Colocar el destino y la hora de llegada en la celda superior derecha de la franja
+            sheet.cell(row=current_row + 1, column=end_col).value = vuelo['To']
+            sheet.cell(row=current_row + 2, column=end_col).value = vuelo['fecha_llegada'].strftime('%H:%M')
 
         sheet.append([''] * (7 + num_columns))
         sheet.append([''] * (7 + num_columns))
