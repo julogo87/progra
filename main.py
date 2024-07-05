@@ -37,7 +37,7 @@ def process_and_plot(df, additional_text):
     sheet['B2'].alignment = Alignment(horizontal='center', vertical='center')
     sheet['B2'].font = Font(size=22, italic=True)  # Cambiado a tamaño 22
 
-    # Escribir la cabecera con horas completas en negrita
+    # Escribir la cabecera con horas completas en negrita y color vinotinto
     start_time = df['fecha_salida'].min().floor('H')
     end_time = df['fecha_llegada'].max().ceil('H')
     num_columns = int((end_time - start_time).total_seconds() / 900) + 1  # 900 segundos = 15 minutos
@@ -45,16 +45,18 @@ def process_and_plot(df, additional_text):
     hour_header = [''] * 1 + \
                   [((start_time + pd.Timedelta(minutes=15 * i)).strftime('%H:%M') if (start_time + pd.Timedelta(minutes=15 * i)).minute == 0 else '') for i in range(num_columns)]
     for col in range(len(hour_header)):
-        sheet.cell(row=3, column=col + 2).value = hour_header[col]
-        sheet.cell(row=3, column=col + 2).font = Font(bold=True)
+        sheet.cell(row=5, column=col + 2).value = hour_header[col]
+        sheet.cell(row=5, column=col + 2).font = Font(bold=True, color="8B0000")  # Vinotinto
+        sheet.cell(row=5, column=col + 2).alignment = Alignment(horizontal='center', vertical='center')
 
     # Ajustar el ancho de las columnas
     for col in range(2, 2 + num_columns):
-        sheet.column_dimensions[get_column_letter(col)].width = 4.3  # 32 píxeles aproximadamente
+        sheet.column_dimensions[get_column_letter(col)].width = 2.5
 
     # Formatos y rellenos
     fill_blue = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
     fill_yellow = PatternFill(start_color="FFFFE0", end_color="FFFFE0", fill_type="solid")
+    fill_light_gray = PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
     thick_border = Border(left=Side(style='thick'),
                           right=Side(style='thick'),
                           top=Side(style='thick'),
@@ -68,9 +70,17 @@ def process_and_plot(df, additional_text):
         cell.value = order[i]
         cell.alignment = Alignment(horizontal='center', vertical='center', text_rotation=90)
         cell.font = Font(size=28, bold=True)
+        cell.fill = fill_light_gray if i == 0 else None
         # Dibujar línea vertical en la columna A desde A6 hacia abajo
         for row in range(start_row, end_row + 1):
             sheet.cell(row=row, column=1).border = Border(left=Side(style='thin'))
+            if row == 69:
+                sheet.cell(row=row, column=1).fill = fill_light_gray
+
+    # Línea vertical gruesa a la derecha de las celdas A6 a A69
+    for row in range(6, 70):
+        cell = sheet.cell(row=row, column=2)
+        cell.border = Border(left=Side(style='thick'))
 
     # Agregar líneas horizontales más gruesas
     thick_horizontal_border = Border(top=Side(style='thick'))
@@ -119,10 +129,11 @@ def process_and_plot(df, additional_text):
                     sheet.cell(row=current_row + 1, column=col).border = Border(top=Side(style='thick'))
                     sheet.cell(row=current_row + 3, column=col).border = Border(bottom=Side(style='thick'))
 
-            # Colocar el número de vuelo en la celda central de la franja
+            # Colocar el número de vuelo en la celda central de la franja y en negrita
             mid_col = start_col + (end_col - start_col) // 2
             sheet.cell(row=current_row + 2, column=mid_col).value = vuelo['Flight']
             sheet.cell(row=current_row + 2, column=mid_col).alignment = Alignment(horizontal='center', vertical='center')
+            sheet.cell(row=current_row + 2, column=mid_col).font = Font(bold=True)
 
             # Colocar el origen y la hora de salida en la primera celda de la franja
             sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
@@ -136,9 +147,12 @@ def process_and_plot(df, additional_text):
             sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
             sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 1, end_row=current_row + 2, end_column=end_col)
 
+            # Crear una celda combinada debajo de la franja
+            sheet.merge_cells(start_row=current_row + 4, start_column=start_col, end_row=current_row + 4, end_column=end_col)
+
         sheet.append([''] * (1 + num_columns))
         sheet.append([''] * (1 + num_columns))
-        current_row += 9
+        current_row += 10  # Mover a la siguiente fila
 
     buf = io.BytesIO()
     workbook.save(buf)
@@ -165,3 +179,4 @@ def index():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
