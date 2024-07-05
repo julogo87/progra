@@ -30,12 +30,12 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('B1:Z1')
     sheet['B1'] = 'PROGRAMACION DE VUELOS Y TRIPULACIONES'
     sheet['B1'].alignment = Alignment(horizontal='center', vertical='center')
-    sheet['B1'].font = Font(size=22, bold=True)
+    sheet['B1'].font = Font(size=22, bold=True)  # Cambiado a tamaño 22
 
     sheet.merge_cells('B2:Z2')
     sheet['B2'] = additional_text
     sheet['B2'].alignment = Alignment(horizontal='center', vertical='center')
-    sheet['B2'].font = Font(size=22, italic=True)
+    sheet['B2'].font = Font(size=22, italic=True)  # Cambiado a tamaño 22
 
     # Escribir la cabecera con horas completas en negrita
     start_time = df['fecha_salida'].min().floor('H')
@@ -50,10 +50,7 @@ def process_and_plot(df, additional_text):
 
     # Ajustar el ancho de las columnas
     for col in range(2, 2 + num_columns):
-        sheet.column_dimensions[get_column_letter(col)].width = 2.3  # 2.3 aproximadamente
-
-    # Establecer el zoom de la hoja al 65%
-    sheet.sheet_view.zoomScale = 65
+        sheet.column_dimensions[get_column_letter(col)].width = 4.3  # 32 píxeles aproximadamente
 
     # Formatos y rellenos
     fill_blue = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
@@ -64,25 +61,25 @@ def process_and_plot(df, additional_text):
                           bottom=Side(style='thick'))
 
     # Combinar celdas y formato de la columna A
-    merge_ranges = [(8, 17), (18, 26), (27, 35), (36, 44), (45, 53), (54, 62), (63, 71)]
+    merge_ranges = [(6, 15), (16, 24), (25, 33), (34, 42), (43, 51), (52, 60), (61, 69)]
     for i, (start_row, end_row) in enumerate(merge_ranges):
         sheet.merge_cells(start_row=start_row, start_column=1, end_row=end_row, end_column=1)
         cell = sheet.cell(row=start_row, column=1)
         cell.value = order[i]
         cell.alignment = Alignment(horizontal='center', vertical='center', text_rotation=90)
         cell.font = Font(size=28, bold=True)
-        # Dibujar línea vertical en la columna A desde A8 hacia abajo
+        # Dibujar línea vertical en la columna A desde A6 hacia abajo
         for row in range(start_row, end_row + 1):
             sheet.cell(row=row, column=1).border = Border(left=Side(style='thin'))
 
     # Agregar líneas horizontales más gruesas
     thick_horizontal_border = Border(top=Side(style='thick'))
-    for row in [8, 18, 27, 36, 45, 54, 63, 72]:  # Mover línea de 71 a 72
+    for row in [6, 16, 25, 34, 43, 52, 61, 70]:  # Mover línea de 69 a 70
         for col in range(1, sheet.max_column + 1):
             cell = sheet.cell(row=row, column=col)
             cell.border = thick_horizontal_border
 
-    current_row = 9  # Iniciar a partir de la fila 9
+    current_row = 7  # Iniciar a partir de la fila 7
 
     for aeronave in order:
         vuelos_aeronave = df[df['aeronave'] == aeronave]
@@ -131,21 +128,19 @@ def process_and_plot(df, additional_text):
             sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
             sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%H:%M')
 
-            # Colocar el destino una celda antes y combinar con la siguiente celda, alineado a la derecha
+            # Colocar el destino una celda antes y combinar con la siguiente celda
             sheet.cell(row=current_row + 1, column=end_col - 1).value = vuelo['To']
-            sheet.cell(row=current_row + 1, column=end_col - 1).alignment = Alignment(horizontal='right')
             sheet.merge_cells(start_row=current_row + 1, start_column=end_col - 1, end_row=current_row + 1, end_column=end_col)
 
-            # Colocar la hora de llegada una celda atrás en la franja y combinar con la siguiente celda, alineado a la derecha
+            # Colocar la hora de llegada una celda atrás en la franja y combinar con la siguiente celda
             sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
-            sheet.cell(row=current_row + 2, column=end_col - 1).alignment = Alignment(horizontal='right')
             sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 1, end_row=current_row + 2, end_column=end_col)
 
         sheet.append([''] * (1 + num_columns))
         sheet.append([''] * (1 + num_columns))
         current_row += 9
 
-    buf = io.Bytes.IO()
+    buf = io.BytesIO()
     workbook.save(buf)
     buf.seek(0)
 
