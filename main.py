@@ -90,7 +90,7 @@ def process_and_plot(df, additional_text):
             cell = sheet.cell(row=row, column=col)
             cell.border = thick_horizontal_border
 
-    current_row_offsets = {'N331QT': 1, 'N332QT': 2, 'N334QT': 4, 'N335QT': 6, 'N336QT': 8, 'N337QT': 10}
+    current_row_offsets = {'N331QT': 0, 'N332QT': -1, 'N334QT': -2, 'N335QT': -3, 'N336QT': -4, 'N337QT': -5}
     base_row = 7  # Iniciar a partir de la fila 7
 
     for aeronave in order:
@@ -158,7 +158,7 @@ def process_and_plot(df, additional_text):
 
         sheet.append([''] * (1 + num_columns))
         sheet.append([''] * (1 + num_columns))
-        current_row += 10  # Mover a la siguiente fila
+        base_row += 10  # Mover a la siguiente fila base
 
     buf = io.BytesIO()
     workbook.save(buf)
