@@ -57,6 +57,7 @@ def process_and_plot(df, additional_text):
     fill_blue = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
     fill_yellow = PatternFill(start_color="FFFFE0", end_color="FFFFE0", fill_type="solid")
     fill_light_gray = PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
+    fill_white = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
     medium_border = Border(left=Side(style='medium'),
                            right=Side(style='medium'),
                            top=Side(style='medium'),
@@ -149,15 +150,14 @@ def process_and_plot(df, additional_text):
             sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
             sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%H:%M')
 
-            # Colocar el destino y la hora de llegada una celda antes y combinar con las dos celdas anteriores
-            if end_col - 2 >= start_col:
-                sheet.merge_cells(start_row=current_row + 1, start_column=end_col - 2, end_row=current_row + 1, end_column=end_col)
-                sheet.cell(row=current_row + 1, column=end_col - 2).value = vuelo['To']
-                sheet.cell(row=current_row + 1, column=end_col - 2).alignment = Alignment(horizontal='right')
+            # Colocar el destino y la hora de llegada una celda antes y combinar con la siguiente celda
+            sheet.cell(row=current_row + 1, column=end_col - 1).value = vuelo['To']
+            sheet.cell(row=current_row + 1, column=end_col - 1).alignment = Alignment(horizontal='right')
+            sheet.merge_cells(start_row=current_row + 1, start_column=end_col - 1, end_row=current_row + 1, end_column=end_col)
 
-                sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 2, end_row=current_row + 2, end_column=end_col)
-                sheet.cell(row=current_row + 2, column=end_col - 2).value = vuelo['fecha_llegada'].strftime('%H:%M')
-                sheet.cell(row=current_row + 2, column=end_col - 2).alignment = Alignment(horizontal='right')
+            sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
+            sheet.cell(row=current_row + 2, column=end_col - 1).alignment = Alignment(horizontal='right')
+            sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 1, end_row=current_row + 2, end_column=end_col)
 
             # Crear una celda combinada debajo de la franja
             sheet.merge_cells(start_row=current_row + 4, start_column=start_col, end_row=current_row + 4, end_column=end_col)
@@ -165,6 +165,110 @@ def process_and_plot(df, additional_text):
         sheet.append([''] * (1 + num_columns))
         sheet.append([''] * (1 + num_columns))
         base_row += 10  # Mover a la siguiente fila base
+
+    # Agregar las nuevas combinaciones de celdas y formateos según las especificaciones
+    # CORR.
+    sheet.merge_cells('A70:A73')
+    cell = sheet['A70']
+    cell.value = "CORR."
+    cell.fill = fill_light_gray
+    cell.font = Font(size=20, bold=True)
+    cell.alignment = Alignment(horizontal='center', vertical='center', text_rotation=90)
+    cell.border = medium_border
+
+    sheet.merge_cells('B70:CW73')
+    for row in range(70, 74):
+        for col in range(2, 102):
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
+
+    sheet.merge_cells('CX70:EA73')
+    for row in range(70, 74):
+        for col in range(102, 106):
+            sheet.cell(row=row, column=col).border = medium_border
+
+    # PROGRAMACION TRIPULACIONES
+    sheet.merge_cells('A74:A92')
+    cell = sheet['A74']
+    cell.value = "PROGRAMACION TRIPULACIONES"
+    cell.fill = fill_light_gray
+    cell.font = Font(size=20, bold=True)
+    cell.alignment = Alignment(horizontal='center', vertical='center', text_rotation=90)
+    cell.border = medium_border
+
+    # MIAMI
+    sheet.merge_cells('B74:W75')
+    for row in range(74, 76):
+        for col in range(2, 24):
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
+    cell = sheet['B74']
+    cell.value = "MIAMI"
+    cell.font = Font(size=20, bold=True)
+    cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    # BASES
+    sheet.merge_cells('X74:AS75')
+    for row in range(74, 76):
+        for col in range(24, 46):
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
+    cell = sheet['X74']
+    cell.value = "BASES"
+    cell.font = Font(size=20, bold=True)
+    cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    # TRASLADOS
+    sheet.merge_cells('AT74:BO75')
+    for row in range(74, 76):
+        for col in range(46, 64):
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
+    cell = sheet['AT74']
+    cell.value = "TRASLADOS"
+    cell.font = Font(size=20, bold=True)
+    cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    # ENTRENAMIENTO
+    sheet.merge_cells('BP74:CW75')
+    for row in range(74, 76):
+        for col in range(64, 102):
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
+    cell = sheet['BP74']
+    cell.value = "ENTRENAMIENTO"
+    cell.font = Font(size=20, bold=True)
+    cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    # Resto de combinaciones y formatos
+    sheet.merge_cells('CX74:EA92')
+    for row in range(74, 93):
+        for col in range(102, 106):
+            sheet.cell(row=row, column=col).border = medium_border
+
+    for row in range(76, 93):
+        for col in range(2, 24):
+            cell = sheet.cell(row=row, column=col)
+            cell.border = medium_border
+            cell.fill = fill_white
+
+    for row in range(76, 93):
+        for col in range(24, 46):
+            cell = sheet.cell(row=row, column=col)
+            cell.border = medium_border
+            cell.fill = fill_white
+
+    for row in range(76, 93):
+        for col in range(46, 64):
+            cell = sheet.cell(row=row, column=col)
+            cell.border = medium_border
+            cell.fill = fill_white
+
+    for row in range(76, 93):
+        for col in range(64, 102):
+            cell = sheet.cell(row=row, column=col)
+            cell.border = medium_border
+            cell.fill = fill_white
 
     # Configurar el zoom del PDF al 65%
     sheet.sheet_view.zoomScale = 65
