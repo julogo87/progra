@@ -51,7 +51,7 @@ def process_and_plot(df, additional_text):
 
     # Ajustar el ancho de las columnas desde B
     for col in range(2, 2 + num_columns):
-        sheet.column_dimensions[get_column_letter(col)].width = 2.5
+        sheet.column_dimensions[get_column_letter(col)].width = 2.6
 
     # Formatos y rellenos
     fill_blue = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
