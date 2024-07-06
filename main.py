@@ -124,7 +124,7 @@ def process_and_plot(df, additional_text):
             for col in range(start_col, end_col + 1):
                 sheet.cell(row=current_row + 1, column=col).fill = fill_blue
                 sheet.cell(row=current_row + 2, column=col).fill = fill_blue
-                sheet.cell(row[current_row + 3, column=col).fill = fill_yellow
+                sheet.cell(row=current_row + 3, column=col).fill = fill_yellow
 
             # Agregar un recuadro negro alrededor de toda la franja
             for col in range(start_col, end_col + 1):
