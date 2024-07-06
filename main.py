@@ -142,21 +142,21 @@ def process_and_plot(df, additional_text):
 
             # Colocar el número de vuelo en la celda central de la franja y en negrita
             mid_col = start_col + (end_col - start_col) // 2
-            sheet.cell[row=current_row + 2, column=mid_col].value = vuelo['Flight']
-            sheet.cell[row=current_row + 2, column=mid_col].alignment = Alignment(horizontal='center', vertical='center')
-            sheet.cell[row=current_row + 2, column=mid_col].font = Font(bold=True)
+            sheet.cell(row=current_row + 2, column=mid_col).value = vuelo['Flight']
+            sheet.cell(row=current_row + 2, column=mid_col).alignment = Alignment(horizontal='center', vertical='center')
+            sheet.cell(row=current_row + 2, column=mid_col).font = Font(bold=True)
 
             # Colocar el origen y la hora de salida en la primera celda de la franja
-            sheet.cell[row=current_row + 1, column=start_col].value = vuelo['From']
-            sheet.cell[row=current_row + 2, column=start_col].value = vuelo['fecha_salida'].strftime('%H:%M')
+            sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
+            sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%H:%M')
 
             # Colocar el destino y la hora de llegada una celda antes y combinar con la siguiente celda
-            sheet.cell[row=current_row + 1, column=end_col - 1].value = vuelo['To']
-            sheet.cell[row=current_row + 1, column=end_col - 1].alignment = Alignment(horizontal='right')
+            sheet.cell(row=current_row + 1, column=end_col - 1).value = vuelo['To']
+            sheet.cell(row=current_row + 1, column=end_col - 1).alignment = Alignment(horizontal='right')
             sheet.merge_cells(start_row=current_row + 1, start_column=end_col - 1, end_row=current_row + 1, end_column=end_col)
 
-            sheet.cell[row=current_row + 2, column=end_col - 1].value = vuelo['fecha_llegada'].strftime('%H:%M')
-            sheet.cell[row=current_row + 2, column=end_col - 1].alignment = Alignment(horizontal='right')
+            sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
+            sheet.cell(row=current_row + 2, column=end_col - 1).alignment = Alignment(horizontal='right')
             sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 1, end_row=current_row + 2, end_column=end_col)
 
             # Crear una celda combinada debajo de la franja
@@ -246,25 +246,29 @@ def process_and_plot(df, additional_text):
         for col in range(102, 106):
             sheet.cell(row=row, column=col).border = medium_border
 
-    # Selección de celdas con borde exterior grueso y fondo blanco
-    def set_outer_border(sheet, start_row, end_row, start_col, end_col, border, fill):
-        for row in range(start_row, end_row + 1):
-            for col in range(start_col, end_col + 1):
-                cell = sheet.cell(row=row, column=col)
-                cell.fill = fill
-                if row == start_row:
-                    cell.border = Border(top=border.top) if border.top else cell.border
-                if row == end_row:
-                    cell.border = Border(bottom=border.bottom) if border.bottom else cell.border
-                if col == start_col:
-                    cell.border = Border(left=border.left) if border.left else cell.border
-                if col == end_col:
-                    cell.border = Border(right=border.right) if border.right else cell.border
+    for row in range(76, 93):
+        for col in range(2, 24):
+            cell = sheet.cell(row=row, column=col)
+            cell.border = medium_border
+            cell.fill = fill_white
 
-    set_outer_border(sheet, 76, 92, 2, 23, medium_border, fill_white)  # B76:W92
-    set_outer_border(sheet, 76, 92, 24, 45, medium_border, fill_white) # X76:AS92
-    set_outer_border(sheet, 76, 92, 46, 63, medium_border, fill_white) # AT76:BO92
-    set_outer_border(sheet, 76, 92, 64, 101, medium_border, fill_white) # BP76:CW92
+    for row in range(76, 93):
+        for col in range(24, 46):
+            cell = sheet.cell(row=row, column=col)
+            cell.border = medium_border
+            cell.fill = fill_white
+
+    for row in range(76, 93):
+        for col in range(46, 64):
+            cell = sheet.cell(row=row, column=col)
+            cell.border = medium_border
+            cell.fill = fill_white
+
+    for row in range(76, 93):
+        for col in range(64, 102):
+            cell = sheet.cell(row=row, column=col)
+            cell.border = medium_border
+            cell.fill = fill_white
 
     # Configurar el zoom del PDF al 65%
     sheet.sheet_view.zoomScale = 65
