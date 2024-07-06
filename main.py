@@ -93,8 +93,7 @@ def process_and_plot(df, additional_text):
     for col in range(2, 2 + num_columns):
         if sheet.cell(row=5, column=col).value == "05:00":
             for row in range(5, 70):
-                cell = sheet.cell(row=row, column=col - 1)
-                cell.border = dashed_red_border
+                sheet.cell(row=row, column=col - 1).border = dashed_red_border
 
     current_row_offsets = {'N331QT': 0, 'N332QT': -1, 'N334QT': -2, 'N335QT': -3, 'N336QT': -4, 'N337QT': -5}
     base_row = 7  # Iniciar a partir de la fila 7
@@ -106,6 +105,11 @@ def process_and_plot(df, additional_text):
 
         offset = current_row_offsets.get(aeronave, 0)
         current_row = base_row + offset
+
+        row_data = [''] * (1 + num_columns)
+        sheet.append([''] * (1 + num_columns))
+        sheet.append([''] * (1 + num_columns))
+        sheet.append(row_data)
 
         for _, vuelo in vuelos_aeronave.iterrows():
             start = vuelo['fecha_salida']
@@ -146,23 +150,20 @@ def process_and_plot(df, additional_text):
             sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%H:%M')
 
             # Colocar el destino y la hora de llegada una celda antes y combinar con la siguiente celda
-            if not sheet.cell(row=current_row + 1, column=end_col - 1).is_merged:
-                sheet.cell(row=current_row + 1, column=end_col - 1).value = vuelo['To']
-                sheet.cell(row=current_row + 1, column=end_col - 1).alignment = Alignment(horizontal='right')
-                sheet.merge_cells(start_row=current_row + 1, start_column=end_col - 1, end_row=current_row + 1, end_column=end_col)
+            sheet.cell(row=current_row + 1, column=end_col - 1).value = vuelo['To']
+            sheet.cell(row=current_row + 1, column=end_col - 1).alignment = Alignment(horizontal='right')
+            sheet.merge_cells(start_row=current_row + 1, start_column=end_col - 1, end_row=current_row + 1, end_column=end_col)
 
-            if not sheet.cell(row=current_row + 2, column=end_col - 1).is_merged:
-                sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
-                sheet.cell(row=current_row + 2, column=end_col - 1).alignment = Alignment(horizontal='right')
-                sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 1, end_row=current_row + 2, end_column=end_col)
+            sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
+            sheet.cell(row=current_row + 2, column=end_col - 1).alignment = Alignment(horizontal='right')
+            sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 1, end_row=current_row + 2, end_column=end_col)
 
             # Crear una celda combinada debajo de la franja
-            if not sheet.cell(row=current_row + 4, column=start_col).is_merged:
-                sheet.merge_cells(start_row=current_row + 4, start_column=start_col, end_row=current_row + 4, end_column=end_col)
+            sheet.merge_cells(start_row=current_row + 4, start_column=start_col, end_row=current_row + 4, end_column=end_col)
 
         sheet.append([''] * (1 + num_columns))
         sheet.append([''] * (1 + num_columns))
-        current_row += 10  # Mover a la siguiente fila base
+        base_row += 10  # Mover a la siguiente fila base
 
     # Configurar el zoom del PDF al 65%
     sheet.sheet_view.zoomScale = 65
