@@ -5,16 +5,8 @@ from openpyxl.styles import PatternFill, Alignment, Font, Border, Side
 from openpyxl.utils import get_column_letter
 import io
 import os
-from io import StringIO
 
 app = Flask(__name__)
-
-def is_merged_cell(sheet, row, col):
-    cell_address = f"{get_column_letter(col)}{row}"
-    for merged_cell_range in sheet.merged_cells.ranges:
-        if cell_address in merged_cell_range:
-            return True
-    return False
 
 def process_and_plot(df, additional_text):
     try:
@@ -27,7 +19,7 @@ def process_and_plot(df, additional_text):
 
     df = df.dropna(subset=['fecha_salida', 'fecha_llegada'])
     order = ['N330QT', 'N331QT', 'N332QT', 'N334QT', 'N335QT', 'N336QT', 'N337QT']
-    df.loc[:, 'aeronave'] = pd.Categorical(df['Reg.'], categories=order, ordered=True)
+    df['aeronave'] = pd.Categorical(df['Reg.'], categories=order, ordered=True)
     df = df.sort_values('aeronave', ascending=False)
 
     workbook = openpyxl.Workbook()
@@ -46,8 +38,8 @@ def process_and_plot(df, additional_text):
     sheet['B2'].font = Font(size=22, italic=True)
 
     # Escribir la cabecera con horas completas en negrita y color vinotinto
-    start_time = df['fecha_salida'].min().floor('h')
-    end_time = df['fecha_llegada'].max().ceil('h')
+    start_time = df['fecha_salida'].min().floor('H')
+    end_time = df['fecha_llegada'].max().ceil('H')
     num_columns = int((end_time - start_time).total_seconds() / 900) + 1  # 900 segundos = 15 minutos
 
     hour_header = [''] * 1 + \
@@ -145,133 +137,32 @@ def process_and_plot(df, additional_text):
 
             # Colocar el número de vuelo en la celda central de la franja y en negrita
             mid_col = start_col + (end_col - start_col) // 2
-            if not is_merged_cell(sheet, current_row + 2, mid_col):
-                sheet.cell(row=current_row + 2, column=mid_col).value = vuelo['Flight']
-                sheet.cell(row=current_row + 2, column=mid_col).alignment = Alignment(horizontal='center', vertical='center')
-                sheet.cell(row=current_row + 2, column=mid_col).font = Font(bold=True)
+            sheet.cell(row=current_row + 2, column=mid_col).value = vuelo['Flight']
+            sheet.cell(row=current_row + 2, column=mid_col).alignment = Alignment(horizontal='center', vertical='center')
+            sheet.cell(row=current_row + 2, column=mid_col).font = Font(bold=True)
 
             # Colocar el origen y la hora de salida en la primera celda de la franja
             sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
             sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%H:%M')
 
-            # Colocar el destino y la hora de llegada dos celdas antes y combinar con las dos siguientes celdas
-            destination_range = f"{get_column_letter(end_col - 2)}{current_row + 1}:{get_column_letter(end_col)}{current_row + 1}"
-            arrival_range = f"{get_column_letter(end_col - 2)}{current_row + 2}:{get_column_letter(end_col)}{current_row + 2}"
+            # Colocar el destino y la hora de llegada una celda antes y combinar con la siguiente celda
+            if not sheet.cell(row=current_row + 1, column=end_col - 1).is_merged:
+                sheet.cell(row=current_row + 1, column=end_col - 1).value = vuelo['To']
+                sheet.cell(row=current_row + 1, column=end_col - 1).alignment = Alignment(horizontal='right')
+                sheet.merge_cells(start_row=current_row + 1, start_column=end_col - 1, end_row=current_row + 1, end_column=end_col)
 
-            if destination_range not in sheet.merged_cells:
-                sheet.cell(row=current_row + 1, column=end_col - 2).value = vuelo['To']
-                sheet.cell(row=current_row + 1, column=end_col - 2).alignment = Alignment(horizontal='right')
-                sheet.merge_cells(destination_range)
-
-            if arrival_range not in sheet.merged_cells:
-                sheet.cell(row=current_row + 2, column=end_col - 2).value = vuelo['fecha_llegada'].strftime('%H:%M')
-                sheet.cell(row=current_row + 2, column=end_col - 2).alignment = Alignment(horizontal='right')
-                sheet.merge_cells(arrival_range)
+            if not sheet.cell(row=current_row + 2, column=end_col - 1).is_merged:
+                sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
+                sheet.cell(row=current_row + 2, column=end_col - 1).alignment = Alignment(horizontal='right')
+                sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 1, end_row=current_row + 2, end_column=end_col)
 
             # Crear una celda combinada debajo de la franja
-            combined_range = f"{get_column_letter(start_col)}{current_row + 4}:{get_column_letter(end_col)}{current_row + 4}"
-            if combined_range not in sheet.merged_cells:
-                sheet.merge_cells(combined_range)
+            if not sheet.cell(row=current_row + 4, column=start_col).is_merged:
+                sheet.merge_cells(start_row=current_row + 4, start_column=start_col, end_row=current_row + 4, end_column=end_col)
 
         sheet.append([''] * (1 + num_columns))
         sheet.append([''] * (1 + num_columns))
         current_row += 10  # Mover a la siguiente fila base
-
-    # Combinar celdas A70 a A73 y aplicar formato
-    sheet.merge_cells('A70:A73')
-    sheet['A70'].value = 'CORR.'
-    sheet['A70'].alignment = Alignment(horizontal='center', vertical='center', text_rotation=90)
-    sheet['A70'].font = Font(size=20, bold=True)
-    sheet['A70'].fill = fill_light_gray
-    sheet['A70'].border = medium_border
-
-    # Combinar celdas B70 a CW73 y aplicar formato
-    sheet.merge_cells('B70:CW73')
-    cell = sheet['B70']
-    cell.fill = fill_light_gray
-    cell.border = medium_border
-
-    # Combinar celdas CX70 a EA73 y aplicar formato
-    sheet.merge_cells('CX70:EA73')
-    cell = sheet['CX70']
-    cell.border = medium_border
-
-    # Combinar celdas A74 a A92 y aplicar formato
-    sheet.merge_cells('A74:A92')
-    sheet['A74'].value = 'PROGRAMACION TRIPULACIONES'
-    sheet['A74'].alignment = Alignment(horizontal='center', vertical='center', text_rotation=90)
-    sheet['A74'].font = Font(size=20, bold=True)
-    sheet['A74'].fill = fill_light_gray
-    sheet['A74'].border = medium_border
-
-    # Combinar celdas B74 a W75 y aplicar formato
-    sheet.merge_cells('B74:W75')
-    cell = sheet['B74']
-    cell.value = 'MIAMI'
-    cell.alignment = Alignment(horizontal='center', vertical='center')
-    cell.font = Font(size=20, bold=True)
-    cell.fill = fill_light_gray
-    cell.border = medium_border
-
-    # Combinar celdas X74 a AS75 y aplicar formato
-    sheet.merge_cells('X74:AS75')
-    cell = sheet['X74']
-    cell.value = 'BASES'
-    cell.alignment = Alignment(horizontal='center', vertical='center')
-    cell.font = Font(size=20, bold=True)
-    cell.fill = fill_light_gray
-    cell.border = medium_border
-
-    # Combinar celdas AT74 a BO75 y aplicar formato
-    sheet.merge_cells('AT74:BO75')
-    cell = sheet['AT74']
-    cell.value = 'TRASLADOS'
-    cell.alignment = Alignment(horizontal='center', vertical='center')
-    cell.font = Font(size=20, bold=True)
-    cell.fill = fill_light_gray
-    cell.border = medium_border
-
-    # Combinar celdas BP74 a CW75 y aplicar formato
-    sheet.merge_cells('BP74:CW75')
-    cell = sheet['BP74']
-    cell.value = 'ENTRENAMIENTO'
-    cell.alignment = Alignment(horizontal='center', vertical='center')
-    cell.font = Font(size=20, bold=True)
-    cell.fill = fill_light_gray
-    cell.border = medium_border
-
-    # Combinar celdas CX74 a EA92 y aplicar formato
-    sheet.merge_cells('CX74:EA92')
-    cell = sheet['CX74']
-    cell.border = medium_border
-
-    # Seleccionar celdas B76 a W92 y aplicar formato
-    for row in range(76, 93):
-        for col in range(2, 24):
-            cell = sheet.cell(row=row, column=col)
-            cell.fill = PatternFill(fill_type=None)  # Fondo blanco
-            cell.border = medium_border
-
-    # Seleccionar celdas X76 a AS92 y aplicar formato
-    for row in range(76, 93):
-        for col in range(24, 45):
-            cell = sheet.cell(row=row, column=col)
-            cell.fill = PatternFill(fill_type=None)  # Fondo blanco
-            cell.border = medium_border
-
-    # Seleccionar celdas AT76 a BO92 y aplicar formato
-    for row in range(76, 93):
-        for col in range(45, 65):
-            cell = sheet.cell(row=row, column=col)
-            cell.fill = PatternFill(fill_type=None)  # Fondo blanco
-            cell.border = medium_border
-
-    # Seleccionar celdas BP76 a CW92 y aplicar formato
-    for row in range(76, 93):
-        for col in range(65, 96):
-            cell = sheet.cell(row=row, column=col)
-            cell.fill = PatternFill(fill_type=None)  # Fondo blanco
-            cell.border = medium_border
 
     # Configurar el zoom del PDF al 65%
     sheet.sheet_view.zoomScale = 65
@@ -288,7 +179,7 @@ def index():
         table_data = request.form['table_data']
         additional_text = request.form.get('additional_text')
         try:
-            df = pd.read_json(StringIO(table_data))
+            df = pd.read_json(table_data)
         except ValueError as e:
             return jsonify({'error': f"JSON parsing error: {e}"}), 400
 
