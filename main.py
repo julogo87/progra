@@ -131,14 +131,14 @@ def process_and_plot(df, additional_text):
                 if col == start_col:
                     sheet.cell(row=current_row + 1, column=col).border = Border(left=Side(style='medium'), top=Side(style='medium'))
                     sheet.cell(row=current_row + 2, column=col).border = Border(left=Side(style='medium'))
-                    sheet.cell[row=current_row + 3, column=col).border = Border(left=Side(style='medium'), bottom=Side(style='medium'))
+                    sheet.cell(row=current_row + 3, column=col).border = Border(left=Side(style='medium'), bottom=Side(style='medium'))
                 elif col == end_col:
-                    sheet.cell[row=current_row + 1, column=col).border = Border(right=Side(style='medium'), top=Side(style='medium'))
-                    sheet.cell[row=current_row + 2, column=col).border = Border(right=Side(style='medium'))
-                    sheet.cell[row=current_row + 3, column=col).border = Border(right=Side(style='medium'), bottom=Side(style='medium'))
+                    sheet.cell(row=current_row + 1, column=col).border = Border(right=Side(style='medium'), top=Side(style='medium'))
+                    sheet.cell(row=current_row + 2, column=col).border = Border(right=Side(style='medium'))
+                    sheet.cell(row=current_row + 3, column=col).border = Border(right=Side(style='medium'), bottom=Side(style='medium'))
                 else:
-                    sheet.cell[row=current_row + 1, column=col).border = Border(top=Side(style='medium'))
-                    sheet.cell[row=current_row + 3, column=col).border = Border(bottom=Side(style='medium'))
+                    sheet.cell(row=current_row + 1, column=col).border = Border(top=Side(style='medium'))
+                    sheet.cell(row=current_row + 3, column=col).border = Border(bottom=Side(style='medium'))
 
             # Colocar el número de vuelo en la celda central de la franja y en negrita
             mid_col = start_col + (end_col - start_col) // 2
