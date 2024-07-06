@@ -38,8 +38,8 @@ def process_and_plot(df, additional_text):
     sheet['B2'].font = Font(size=22, italic=True)
 
     # Escribir la cabecera con horas completas en negrita y color vinotinto
-    start_time = df['fecha_salida'].min().floor('H')
-    end_time = df['fecha_llegada'].max().ceil('H')
+    start_time = df['fecha_salida'].min().floor('h')
+    end_time = df['fecha_llegada'].max().ceil('h')
     num_columns = int((end_time - start_time).total_seconds() / 900) + 1  # 900 segundos = 15 minutos
 
     hour_header = [''] * 1 + \
@@ -137,9 +137,10 @@ def process_and_plot(df, additional_text):
 
             # Colocar el número de vuelo en la celda central de la franja y en negrita
             mid_col = start_col + (end_col - start_col) // 2
-            sheet.cell(row=current_row + 2, column=mid_col).value = vuelo['Flight']
-            sheet.cell(row=current_row + 2, column=mid_col).alignment = Alignment(horizontal='center', vertical='center')
-            sheet.cell(row=current_row + 2, column=mid_col).font = Font(bold=True)
+            flight_cell = sheet.cell(row=current_row + 2, column=mid_col)
+            flight_cell.value = vuelo['Flight']
+            flight_cell.alignment = Alignment(horizontal='center', vertical='center')
+            flight_cell.font = Font(bold=True)
 
             # Colocar el origen y la hora de salida en la primera celda de la franja
             sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
