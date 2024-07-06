@@ -8,6 +8,12 @@ import os
 
 app = Flask(__name__)
 
+def is_merged_cell(sheet, row, col):
+    for merged_cell_range in sheet.merged_cells.ranges:
+        if (row, col) in merged_cell_range:
+            return True
+    return False
+
 def process_and_plot(df, additional_text):
     try:
         df['fecha_salida'] = pd.to_datetime(df['STD'], format='%d%b %H:%M', dayfirst=True)
@@ -137,11 +143,10 @@ def process_and_plot(df, additional_text):
 
             # Colocar el número de vuelo en la celda central de la franja y en negrita
             mid_col = start_col + (end_col - start_col) // 2
-            flight_cell = sheet.cell(row=current_row + 2, column=mid_col)
-            if not flight_cell.merged:
-                flight_cell.value = vuelo['Flight']
-                flight_cell.alignment = Alignment(horizontal='center', vertical='center')
-                flight_cell.font = Font(bold=True)
+            if not is_merged_cell(sheet, current_row + 2, mid_col):
+                sheet.cell(row=current_row + 2, column=mid_col).value = vuelo['Flight']
+                sheet.cell(row=current_row + 2, column=mid_col).alignment = Alignment(horizontal='center', vertical='center')
+                sheet.cell(row=current_row + 2, column=mid_col).font = Font(bold=True)
 
             # Colocar el origen y la hora de salida en la primera celda de la franja
             sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
