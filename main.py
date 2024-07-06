@@ -146,19 +146,23 @@ def process_and_plot(df, additional_text):
             sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%H:%M')
 
             # Colocar el destino y la hora de llegada dos celdas antes y combinar con las dos siguientes celdas
-            if not sheet.cell(row=current_row + 1, column=end_col - 2).is_merged:
+            destination_range = f"{get_column_letter(end_col - 2)}{current_row + 1}:{get_column_letter(end_col)}{current_row + 1}"
+            arrival_range = f"{get_column_letter(end_col - 2)}{current_row + 2}:{get_column_letter(end_col)}{current_row + 2}"
+
+            if destination_range not in sheet.merged_cells:
                 sheet.cell(row=current_row + 1, column=end_col - 2).value = vuelo['To']
                 sheet.cell(row=current_row + 1, column=end_col - 2).alignment = Alignment(horizontal='right')
-                sheet.merge_cells(start_row=current_row + 1, start_column=end_col - 2, end_row=current_row + 1, end_column=end_col)
+                sheet.merge_cells(destination_range)
 
-            if not sheet.cell(row=current_row + 2, column=end_col - 2).is_merged:
+            if arrival_range not in sheet.merged_cells:
                 sheet.cell(row=current_row + 2, column=end_col - 2).value = vuelo['fecha_llegada'].strftime('%H:%M')
                 sheet.cell(row=current_row + 2, column=end_col - 2).alignment = Alignment(horizontal='right')
-                sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 2, end_row=current_row + 2, end_column=end_col)
+                sheet.merge_cells(arrival_range)
 
             # Crear una celda combinada debajo de la franja
-            if not sheet.cell(row=current_row + 4, column=start_col).is_merged:
-                sheet.merge_cells(start_row=current_row + 4, start_column=start_col, end_row=current_row + 4, end_column=end_col)
+            combined_range = f"{get_column_letter(start_col)}{current_row + 4}:{get_column_letter(end_col)}{current_row + 4}"
+            if combined_range not in sheet.merged_cells:
+                sheet.merge_cells(combined_range)
 
         sheet.append([''] * (1 + num_columns))
         sheet.append([''] * (1 + num_columns))
@@ -288,4 +292,3 @@ def index():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-
