@@ -124,39 +124,39 @@ def process_and_plot(df, additional_text):
             for col in range(start_col, end_col + 1):
                 sheet.cell(row=current_row + 1, column=col).fill = fill_blue
                 sheet.cell(row=current_row + 2, column=col).fill = fill_blue
-                sheet.cell(row=current_row + 3, column=col).fill = fill_yellow
+                sheet.cell(row[current_row + 3, column=col).fill = fill_yellow
 
             # Agregar un recuadro negro alrededor de toda la franja
             for col in range(start_col, end_col + 1):
                 if col == start_col:
                     sheet.cell(row=current_row + 1, column=col).border = Border(left=Side(style='medium'), top=Side(style='medium'))
                     sheet.cell(row=current_row + 2, column=col).border = Border(left=Side(style='medium'))
-                    sheet.cell(row=current_row + 3, column=col).border = Border(left=Side(style='medium'), bottom=Side(style='medium'))
+                    sheet.cell[row=current_row + 3, column=col).border = Border(left=Side(style='medium'), bottom=Side(style='medium'))
                 elif col == end_col:
-                    sheet.cell(row=current_row + 1, column=col).border = Border(right=Side(style='medium'), top=Side(style='medium'))
-                    sheet.cell(row=current_row + 2, column=col).border = Border(right=Side(style='medium'))
-                    sheet.cell(row=current_row + 3, column=col).border = Border(right=Side(style='medium'), bottom=Side(style='medium'))
+                    sheet.cell[row=current_row + 1, column=col).border = Border(right=Side(style='medium'), top=Side(style='medium'))
+                    sheet.cell[row=current_row + 2, column=col).border = Border(right=Side(style='medium'))
+                    sheet.cell[row=current_row + 3, column=col).border = Border(right=Side(style='medium'), bottom=Side(style='medium'))
                 else:
-                    sheet.cell(row=current_row + 1, column=col).border = Border(top=Side(style='medium'))
-                    sheet.cell(row=current_row + 3, column=col).border = Border(bottom=Side(style='medium'))
+                    sheet.cell[row=current_row + 1, column=col).border = Border(top=Side(style='medium'))
+                    sheet.cell[row=current_row + 3, column=col).border = Border(bottom=Side(style='medium'))
 
             # Colocar el número de vuelo en la celda central de la franja y en negrita
             mid_col = start_col + (end_col - start_col) // 2
-            sheet.cell(row=current_row + 2, column=mid_col).value = vuelo['Flight']
-            sheet.cell(row=current_row + 2, column=mid_col).alignment = Alignment(horizontal='center', vertical='center')
-            sheet.cell(row=current_row + 2, column=mid_col).font = Font(bold=True)
+            sheet.cell[row=current_row + 2, column=mid_col].value = vuelo['Flight']
+            sheet.cell[row=current_row + 2, column=mid_col].alignment = Alignment(horizontal='center', vertical='center')
+            sheet.cell[row=current_row + 2, column=mid_col].font = Font(bold=True)
 
             # Colocar el origen y la hora de salida en la primera celda de la franja
-            sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
-            sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%H:%M')
+            sheet.cell[row=current_row + 1, column=start_col].value = vuelo['From']
+            sheet.cell[row=current_row + 2, column=start_col].value = vuelo['fecha_salida'].strftime('%H:%M')
 
             # Colocar el destino y la hora de llegada una celda antes y combinar con la siguiente celda
-            sheet.cell(row=current_row + 1, column=end_col - 1).value = vuelo['To']
-            sheet.cell(row=current_row + 1, column=end_col - 1).alignment = Alignment(horizontal='right')
+            sheet.cell[row=current_row + 1, column=end_col - 1].value = vuelo['To']
+            sheet.cell[row=current_row + 1, column=end_col - 1].alignment = Alignment(horizontal='right')
             sheet.merge_cells(start_row=current_row + 1, start_column=end_col - 1, end_row=current_row + 1, end_column=end_col)
 
-            sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
-            sheet.cell(row=current_row + 2, column=end_col - 1).alignment = Alignment(horizontal='right')
+            sheet.cell[row=current_row + 2, column=end_col - 1].value = vuelo['fecha_llegada'].strftime('%H:%M')
+            sheet.cell[row=current_row + 2, column=end_col - 1].alignment = Alignment(horizontal='right')
             sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 1, end_row=current_row + 2, end_column=end_col)
 
             # Crear una celda combinada debajo de la franja
@@ -180,12 +180,12 @@ def process_and_plot(df, additional_text):
     for row in range(70, 74):
         for col in range(2, 102):
             sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell[row=row, column=col].fill = fill_light_gray
+            sheet.cell(row=row, column=col).fill = fill_light_gray
 
     sheet.merge_cells('CX70:EA73')
     for row in range(70, 74):
         for col in range(102, 106):
-            sheet.cell[row=row, column=col].border = medium_border
+            sheet.cell(row=row, column=col).border = medium_border
 
     # PROGRAMACION TRIPULACIONES
     sheet.merge_cells('A74:A92')
@@ -200,8 +200,8 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('B74:W75')
     for row in range(74, 76):
         for col in range(2, 24):
-            sheet.cell[row=row, column=col].border = medium_border
-            sheet.cell[row=row, column=col].fill = fill_light_gray
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
     cell = sheet['B74']
     cell.value = "MIAMI"
     cell.font = Font(size=20, bold=True)
@@ -211,8 +211,8 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('X74:AS75')
     for row in range(74, 76):
         for col in range(24, 46):
-            sheet.cell[row=row, column=col].border = medium_border
-            sheet.cell[row=row, column=col].fill = fill_light_gray
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
     cell = sheet['X74']
     cell.value = "BASES"
     cell.font = Font(size=20, bold=True)
@@ -222,8 +222,8 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('AT74:BO75')
     for row in range(74, 76):
         for col in range(46, 64):
-            sheet.cell[row=row, column=col].border = medium_border
-            sheet.cell[row=row, column=col].fill = fill_light_gray
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
     cell = sheet['AT74']
     cell.value = "TRASLADOS"
     cell.font = Font(size=20, bold=True)
@@ -233,8 +233,8 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('BP74:CW75')
     for row in range(74, 76):
         for col in range(64, 102):
-            sheet.cell[row=row, column=col].border = medium_border
-            sheet.cell[row=row, column=col].fill = fill_light_gray
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
     cell = sheet['BP74']
     cell.value = "ENTRENAMIENTO"
     cell.font = Font(size=20, bold=True)
@@ -244,7 +244,7 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('CX74:EA92')
     for row in range(74, 93):
         for col in range(102, 106):
-            sheet.cell[row=row, column=col].border = medium_border
+            sheet.cell(row=row, column=col).border = medium_border
 
     # Selección de celdas con borde exterior grueso y fondo blanco
     def set_outer_border(sheet, start_row, end_row, start_col, end_col, border, fill):
@@ -294,3 +294,4 @@ def index():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
