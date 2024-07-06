@@ -180,12 +180,12 @@ def process_and_plot(df, additional_text):
     for row in range(70, 74):
         for col in range(2, 102):
             sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell(row=row, column=col).fill = fill_light_gray
+            sheet.cell[row=row, column=col].fill = fill_light_gray
 
     sheet.merge_cells('CX70:EA73')
     for row in range(70, 74):
         for col in range(102, 106):
-            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell[row=row, column=col].border = medium_border
 
     # PROGRAMACION TRIPULACIONES
     sheet.merge_cells('A74:A92')
@@ -200,8 +200,8 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('B74:W75')
     for row in range(74, 76):
         for col in range(2, 24):
-            sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell(row=row, column=col).fill = fill_light_gray
+            sheet.cell[row=row, column=col].border = medium_border
+            sheet.cell[row=row, column=col].fill = fill_light_gray
     cell = sheet['B74']
     cell.value = "MIAMI"
     cell.font = Font(size=20, bold=True)
@@ -211,8 +211,8 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('X74:AS75')
     for row in range(74, 76):
         for col in range(24, 46):
-            sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell(row=row, column=col).fill = fill_light_gray
+            sheet.cell[row=row, column=col].border = medium_border
+            sheet.cell[row=row, column=col].fill = fill_light_gray
     cell = sheet['X74']
     cell.value = "BASES"
     cell.font = Font(size=20, bold=True)
@@ -222,8 +222,8 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('AT74:BO75')
     for row in range(74, 76):
         for col in range(46, 64):
-            sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell(row=row, column=col).fill = fill_light_gray
+            sheet.cell[row=row, column=col].border = medium_border
+            sheet.cell[row=row, column=col].fill = fill_light_gray
     cell = sheet['AT74']
     cell.value = "TRASLADOS"
     cell.font = Font(size=20, bold=True)
@@ -233,8 +233,8 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('BP74:CW75')
     for row in range(74, 76):
         for col in range(64, 102):
-            sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell(row=row, column=col).fill = fill_light_gray
+            sheet.cell[row=row, column=col].border = medium_border
+            sheet.cell[row=row, column=col].fill = fill_light_gray
     cell = sheet['BP74']
     cell.value = "ENTRENAMIENTO"
     cell.font = Font(size=20, bold=True)
@@ -244,31 +244,27 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('CX74:EA92')
     for row in range(74, 93):
         for col in range(102, 106):
-            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell[row=row, column=col].border = medium_border
 
-    for row in range(76, 93):
-        for col in range(2, 24):
-            cell = sheet.cell(row=row, column=col)
-            cell.border = medium_border
-            cell.fill = fill_white
+    # Selección de celdas con borde exterior grueso y fondo blanco
+    def set_outer_border(sheet, start_row, end_row, start_col, end_col, border, fill):
+        for row in range(start_row, end_row + 1):
+            for col in range(start_col, end_col + 1):
+                cell = sheet.cell(row=row, column=col)
+                cell.fill = fill
+                if row == start_row:
+                    cell.border = Border(top=border.top) if border.top else cell.border
+                if row == end_row:
+                    cell.border = Border(bottom=border.bottom) if border.bottom else cell.border
+                if col == start_col:
+                    cell.border = Border(left=border.left) if border.left else cell.border
+                if col == end_col:
+                    cell.border = Border(right=border.right) if border.right else cell.border
 
-    for row in range(76, 93):
-        for col in range(24, 46):
-            cell = sheet.cell(row=row, column=col)
-            cell.border = medium_border
-            cell.fill = fill_white
-
-    for row in range(76, 93):
-        for col in range(46, 64):
-            cell = sheet.cell(row=row, column=col)
-            cell.border = medium_border
-            cell.fill = fill_white
-
-    for row in range(76, 93):
-        for col in range(64, 102):
-            cell = sheet.cell(row=row, column=col)
-            cell.border = medium_border
-            cell.fill = fill_white
+    set_outer_border(sheet, 76, 92, 2, 23, medium_border, fill_white)  # B76:W92
+    set_outer_border(sheet, 76, 92, 24, 45, medium_border, fill_white) # X76:AS92
+    set_outer_border(sheet, 76, 92, 46, 63, medium_border, fill_white) # AT76:BO92
+    set_outer_border(sheet, 76, 92, 64, 101, medium_border, fill_white) # BP76:CW92
 
     # Configurar el zoom del PDF al 65%
     sheet.sheet_view.zoomScale = 65
