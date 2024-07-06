@@ -5,12 +5,14 @@ from openpyxl.styles import PatternFill, Alignment, Font, Border, Side
 from openpyxl.utils import get_column_letter
 import io
 import os
+from io import StringIO
 
 app = Flask(__name__)
 
 def is_merged_cell(sheet, row, col):
+    cell_address = f"{get_column_letter(col)}{row}"
     for merged_cell_range in sheet.merged_cells.ranges:
-        if (row, col) in merged_cell_range:
+        if cell_address in merged_cell_range:
             return True
     return False
 
@@ -25,7 +27,7 @@ def process_and_plot(df, additional_text):
 
     df = df.dropna(subset=['fecha_salida', 'fecha_llegada'])
     order = ['N330QT', 'N331QT', 'N332QT', 'N334QT', 'N335QT', 'N336QT', 'N337QT']
-    df['aeronave'] = pd.Categorical(df['Reg.'], categories=order, ordered=True)
+    df.loc[:, 'aeronave'] = pd.Categorical(df['Reg.'], categories=order, ordered=True)
     df = df.sort_values('aeronave', ascending=False)
 
     workbook = openpyxl.Workbook()
@@ -286,7 +288,7 @@ def index():
         table_data = request.form['table_data']
         additional_text = request.form.get('additional_text')
         try:
-            df = pd.read_json(table_data)
+            df = pd.read_json(StringIO(table_data))
         except ValueError as e:
             return jsonify({'error': f"JSON parsing error: {e}"}), 400
 
