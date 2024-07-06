@@ -137,10 +137,10 @@ def process_and_plot(df, additional_text):
 
             # Colocar el número de vuelo en la celda central de la franja y en negrita
             mid_col = start_col + (end_col - start_col) // 2
-            flight_cell = sheet.cell(row=current_row + 2, column=mid_col)
-            flight_cell.value = vuelo['Flight']
-            flight_cell.alignment = Alignment(horizontal='center', vertical='center')
-            flight_cell.font = Font(bold=True)
+            if not sheet.cell(row=current_row + 2, column=mid_col).merged:
+                sheet.cell(row=current_row + 2, column=mid_col).value = vuelo['Flight']
+                sheet.cell(row=current_row + 2, column=mid_col).alignment = Alignment(horizontal='center', vertical='center')
+                sheet.cell(row=current_row + 2, column=mid_col).font = Font(bold=True)
 
             # Colocar el origen y la hora de salida en la primera celda de la franja
             sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
