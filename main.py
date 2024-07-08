@@ -22,6 +22,21 @@ def process_and_plot(df, additional_text):
     df['aeronave'] = pd.Categorical(df['Reg.'], categories=order, ordered=True)
     df = df.sort_values('aeronave', ascending=False)
 
+    # Agregar franjas de vuelo "MANTO" para las aeronaves que no tienen vuelos
+    start_time = df['fecha_salida'].min().floor('D') + pd.Timedelta(hours=5)
+    end_time = df['fecha_llegada'].max().ceil('D') + pd.Timedelta(hours=5)
+    for aeronave in order:
+        if aeronave not in df['aeronave'].unique():
+            manto_flight = {
+                'Reg.': aeronave,
+                'Flight': 'MANTO',
+                'From': '',
+                'To': '',
+                'fecha_salida': start_time,
+                'fecha_llegada': end_time
+            }
+            df = df.append(manto_flight, ignore_index=True)
+
     workbook = openpyxl.Workbook()
     sheet = workbook.active
     sheet.title = 'Programación de Vuelos QT'
@@ -223,7 +238,7 @@ def process_and_plot(df, additional_text):
     for row in range(74, 76):
         for col in range(46, 64):
             sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell(row=row, column=col).fill = fill_light_gray
+            sheet.cell[row=row, column=col].fill = fill_light_gray
     cell = sheet['AT74']
     cell.value = "TRASLADOS"
     cell.font = Font(size=20, bold=True)
@@ -234,7 +249,7 @@ def process_and_plot(df, additional_text):
     for row in range(74, 76):
         for col in range(64, 102):
             sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell(row=row, column=col).fill = fill_light_gray
+            sheet.cell[row=row, column=col].fill = fill_light_gray
     cell = sheet['BP74']
     cell.value = "ENTRENAMIENTO"
     cell.font = Font(size=20, bold=True)
