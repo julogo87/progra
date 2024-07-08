@@ -19,6 +19,12 @@ def process_and_plot(df, additional_text):
 
     df = df.dropna(subset=['fecha_salida', 'fecha_llegada'])
     order = ['N330QT', 'N331QT', 'N332QT', 'N334QT', 'N335QT', 'N336QT', 'N337QT']
+
+    # Verificar si todas las aeronaves están presentes en la columna 'Reg.'
+    missing_aircraft = [aircraft for aircraft in order if aircraft not in df['Reg.'].unique()]
+    if missing_aircraft:
+        return None, f"Favor ingresar contenido para las matrículas faltantes: {', '.join(missing_aircraft)}"
+
     df['aeronave'] = pd.Categorical(df['Reg.'], categories=order, ordered=True)
     df = df.sort_values('aeronave', ascending=False)
 
@@ -141,39 +147,39 @@ def process_and_plot(df, additional_text):
             for col in range(start_col, end_col + 1):
                 sheet.cell(row=current_row + 1, column=col).fill = fill_blue
                 sheet.cell(row=current_row + 2, column=col).fill = fill_blue
-                sheet.cell(row=current_row + 3, column=col).fill = fill_yellow
+                sheet.cell[row=current_row + 3, column=col].fill = fill_yellow
 
             # Agregar un recuadro negro alrededor de toda la franja
             for col in range(start_col, end_col + 1):
                 if col == start_col:
-                    sheet.cell(row=current_row + 1, column=col).border = Border(left=Side(style='medium'), top=Side(style='medium'))
-                    sheet.cell(row=current_row + 2, column=col).border = Border(left=Side(style='medium'))
-                    sheet.cell(row=current_row + 3, column=col).border = Border(left=Side(style='medium'), bottom=Side(style='medium'))
+                    sheet.cell[row=current_row + 1, column=col].border = Border(left=Side(style='medium'), top=Side(style='medium'))
+                    sheet.cell[row=current_row + 2, column=col].border = Border(left=Side(style='medium'))
+                    sheet.cell[row=current_row + 3, column=col].border = Border(left=Side(style='medium'), bottom=Side(style='medium'))
                 elif col == end_col:
-                    sheet.cell(row=current_row + 1, column=col).border = Border(right=Side(style='medium'), top=Side(style='medium'))
-                    sheet.cell(row=current_row + 2, column=col).border = Border(right=Side(style='medium'))
-                    sheet.cell(row=current_row + 3, column=col).border = Border(right=Side(style='medium'), bottom=Side(style='medium'))
+                    sheet.cell[row=current_row + 1, column=col].border = Border(right=Side(style='medium'), top=Side(style='medium'))
+                    sheet.cell[row=current_row + 2, column=col].border = Border(right=Side(style='medium'))
+                    sheet.cell[row=current_row + 3, column=col].border = Border(right=Side(style='medium'), bottom=Side(style='medium'))
                 else:
-                    sheet.cell(row=current_row + 1, column=col).border = Border(top=Side(style='medium'))
-                    sheet.cell(row=current_row + 3, column=col).border = Border(bottom=Side(style='medium'))
+                    sheet.cell[row=current_row + 1, column=col].border = Border(top=Side(style='medium'))
+                    sheet.cell[row=current_row + 3, column=col].border = Border(bottom=Side(style='medium'))
 
             # Colocar el número de vuelo en la celda central de la franja y en negrita
             mid_col = start_col + (end_col - start_col) // 2
-            sheet.cell(row=current_row + 2, column=mid_col).value = vuelo['Flight']
-            sheet.cell(row=current_row + 2, column=mid_col).alignment = Alignment(horizontal='center', vertical='center')
-            sheet.cell(row=current_row + 2, column=mid_col).font = Font(bold=True)
+            sheet.cell[row=current_row + 2, column=mid_col].value = vuelo['Flight']
+            sheet.cell[row=current_row + 2, column=mid_col].alignment = Alignment(horizontal='center', vertical='center')
+            sheet.cell[row=current_row + 2, column=mid_col].font = Font(bold=True)
 
             # Colocar el origen y la hora de salida en la primera celda de la franja
-            sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
-            sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%H:%M')
+            sheet.cell[row=current_row + 1, column=start_col].value = vuelo['From']
+            sheet.cell[row=current_row + 2, column=start_col].value = vuelo['fecha_salida'].strftime('%H:%M')
 
             # Colocar el destino y la hora de llegada una celda antes y combinar con la siguiente celda
-            sheet.cell(row=current_row + 1, column=end_col - 1).value = vuelo['To']
-            sheet.cell(row=current_row + 1, column=end_col - 1).alignment = Alignment(horizontal='right')
+            sheet.cell[row=current_row + 1, column=end_col - 1].value = vuelo['To']
+            sheet.cell[row=current_row + 1, column=end_col - 1].alignment = Alignment(horizontal='right')
             sheet.merge_cells(start_row=current_row + 1, start_column=end_col - 1, end_row=current_row + 1, end_column=end_col)
 
-            sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
-            sheet.cell(row=current_row + 2, column=end_col - 1).alignment = Alignment(horizontal='right')
+            sheet.cell[row=current_row + 2, column=end_col - 1].value = vuelo['fecha_llegada'].strftime('%H:%M')
+            sheet.cell[row=current_row + 2, column=end_col - 1].alignment = Alignment(horizontal='right')
             sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 1, end_row=current_row + 2, end_column=end_col)
 
             # Crear una celda combinada debajo de la franja
@@ -315,3 +321,4 @@ def index():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
