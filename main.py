@@ -23,7 +23,7 @@ def process_and_plot(df, additional_text):
     # Verificar si todas las aeronaves están presentes en la columna 'Reg.'
     missing_aircraft = [aircraft for aircraft in order if aircraft not in df['Reg.'].unique()]
     if missing_aircraft:
-        return None, f"Favor ingresar contenido para las matrículas faltantes: {', '.join(missing_aircraft)}"
+        return None, f"Favor ingresar contenido para las matriculas faltantes: {', '.join(missing_aircraft)}"
 
     df['aeronave'] = pd.Categorical(df['Reg.'], categories=order, ordered=True)
     df = df.sort_values('aeronave', ascending=False)
