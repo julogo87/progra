@@ -25,17 +25,19 @@ def process_and_plot(df, additional_text):
     # Agregar franjas de vuelo "MANTO" para las aeronaves que no tienen vuelos
     start_time = df['fecha_salida'].min().floor('D') + pd.Timedelta(hours=5)
     end_time = df['fecha_llegada'].max().ceil('D') + pd.Timedelta(hours=5)
+    manto_flights = []
     for aeronave in order:
         if aeronave not in df['aeronave'].unique():
-            manto_flight = {
+            manto_flights.append({
                 'Reg.': aeronave,
                 'Flight': 'MANTO',
                 'From': '',
                 'To': '',
                 'fecha_salida': start_time,
                 'fecha_llegada': end_time
-            }
-            df = df.append(manto_flight, ignore_index=True)
+            })
+    if manto_flights:
+        df = pd.concat([df, pd.DataFrame(manto_flights)], ignore_index=True)
 
     workbook = openpyxl.Workbook()
     sheet = workbook.active
@@ -195,7 +197,7 @@ def process_and_plot(df, additional_text):
     for row in range(70, 74):
         for col in range(2, 102):
             sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell(row=row, column=col).fill = fill_light_gray
+            sheet.cell[row=row, column=col].fill = fill_light_gray
 
     sheet.merge_cells('CX70:EA73')
     for row in range(70, 74):
@@ -216,7 +218,7 @@ def process_and_plot(df, additional_text):
     for row in range(74, 76):
         for col in range(2, 24):
             sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell(row=row, column=col).fill = fill_light_gray
+            sheet.cell[row=row, column=col].fill = fill_light_gray
     cell = sheet['B74']
     cell.value = "MIAMI"
     cell.font = Font(size=20, bold=True)
@@ -248,7 +250,7 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('BP74:CW75')
     for row in range(74, 76):
         for col in range(64, 102):
-            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell[(row=row, column=col).border = medium_border
             sheet.cell(row=row, column=col).fill = fill_light_gray
     cell = sheet['BP74']
     cell.value = "ENTRENAMIENTO"
@@ -313,4 +315,3 @@ def index():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-
