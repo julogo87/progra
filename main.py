@@ -197,7 +197,7 @@ def process_and_plot(df, additional_text):
     for row in range(70, 74):
         for col in range(2, 102):
             sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell[row=row, column=col].fill = fill_light_gray
+            sheet.cell(row=row, column=col).fill = fill_light_gray
 
     sheet.merge_cells('CX70:EA73')
     for row in range(70, 74):
@@ -218,7 +218,7 @@ def process_and_plot(df, additional_text):
     for row in range(74, 76):
         for col in range(2, 24):
             sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell[row=row, column=col].fill = fill_light_gray
+            sheet.cell(row=row, column=col).fill = fill_light_gray
     cell = sheet['B74']
     cell.value = "MIAMI"
     cell.font = Font(size=20, bold=True)
@@ -250,7 +250,7 @@ def process_and_plot(df, additional_text):
     sheet.merge_cells('BP74:CW75')
     for row in range(74, 76):
         for col in range(64, 102):
-            sheet.cell[(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).border = medium_border
             sheet.cell(row=row, column=col).fill = fill_light_gray
     cell = sheet['BP74']
     cell.value = "ENTRENAMIENTO"
