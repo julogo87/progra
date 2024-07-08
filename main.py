@@ -238,7 +238,7 @@ def process_and_plot(df, additional_text):
     for row in range(74, 76):
         for col in range(46, 64):
             sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell[row=row, column=col].fill = fill_light_gray
+            sheet.cell(row=row, column=col).fill = fill_light_gray
     cell = sheet['AT74']
     cell.value = "TRASLADOS"
     cell.font = Font(size=20, bold=True)
@@ -249,7 +249,7 @@ def process_and_plot(df, additional_text):
     for row in range(74, 76):
         for col in range(64, 102):
             sheet.cell(row=row, column=col).border = medium_border
-            sheet.cell[row=row, column=col].fill = fill_light_gray
+            sheet.cell(row=row, column=col).fill = fill_light_gray
     cell = sheet['BP74']
     cell.value = "ENTRENAMIENTO"
     cell.font = Font(size=20, bold=True)
