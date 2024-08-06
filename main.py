@@ -10,8 +10,8 @@ app = Flask(__name__)
 
 def process_and_plot(df, additional_text):
     try:
-        df['fecha_salida'] = pd.to_datetime(df['STD'], format='%d%b %H:%M', dayfirst=True)
-        df['fecha_llegada'] = pd.to_datetime(df['STA'], format='%d%b %H:%M', dayfirst=True)
+        df['fecha_salida'] = pd.to_datetime(df['STD'], format='%d%b %:%M', dayfirst=True)
+        df['fecha_llegada'] = pd.to_datetime(df['STA'], format='%d%b %:%M', dayfirst=True)
     except KeyError as e:
         return None, f"Missing column in input data: {e}"
     except ValueError as e:
@@ -61,12 +61,12 @@ def process_and_plot(df, additional_text):
     sheet['B2'].font = Font(size=22, italic=True)
 
     # Escribir la cabecera con horas completas en negrita y color vinotinto
-    start_time = df['fecha_salida'].min().floor('H')
-    end_time = df['fecha_llegada'].max().ceil('H')
+    start_time = df['fecha_salida'].min().floor('h')
+    end_time = df['fecha_llegada'].max().ceil('h')
     num_columns = int((end_time - start_time).total_seconds() / 900) + 1  # 900 segundos = 15 minutos
 
     hour_header = [''] * 1 + \
-                  [((start_time + pd.Timedelta(minutes=15 * i)).strftime('%H:%M') if (start_time + pd.Timedelta(minutes=15 * i)).minute == 0 else '') for i in range(num_columns)]
+                  [((start_time + pd.Timedelta(minutes=15 * i)).strftime('%:%M') if (start_time + pd.Timedelta(minutes=15 * i)).minute == 0 else '') for i in range(num_columns)]
     for col in range(len(hour_header)):
         sheet.cell(row=5, column=col + 2).value = hour_header[col]
         sheet.cell(row=5, column=col + 2).font = Font(bold=True, color="8B0000")  # Vinotinto
@@ -171,14 +171,14 @@ def process_and_plot(df, additional_text):
 
             # Colocar el origen y la hora de salida en la primera celda de la franja
             sheet.cell(row=current_row + 1, column=start_col).value = vuelo['From']
-            sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%H:%M')
+            sheet.cell(row=current_row + 2, column=start_col).value = vuelo['fecha_salida'].strftime('%:%M')
 
             # Colocar el destino y la hora de llegada una celda antes y combinar con la siguiente celda
             sheet.cell(row=current_row + 1, column=end_col - 1).value = vuelo['To']
             sheet.cell(row=current_row + 1, column=end_col - 1).alignment = Alignment(horizontal='right')
             sheet.merge_cells(start_row=current_row + 1, start_column=end_col - 1, end_row=current_row + 1, end_column=end_col)
 
-            sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%H:%M')
+            sheet.cell(row=current_row + 2, column=end_col - 1).value = vuelo['fecha_llegada'].strftime('%:%M')
             sheet.cell(row=current_row + 2, column=end_col - 1).alignment = Alignment(horizontal='right')
             sheet.merge_cells(start_row=current_row + 2, start_column=end_col - 1, end_row=current_row + 2, end_column=end_col)
 
