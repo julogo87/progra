@@ -61,8 +61,8 @@ def process_and_plot(df, additional_text):
     sheet['B2'].font = Font(size=22, italic=True)
 
     # Escribir la cabecera con horas completas en negrita y color vinotinto
-    start_time = df['fecha_salida'].min().floor('h')
-    end_time = df['fecha_llegada'].max().ceil('h')
+    start_time = df['fecha_salida'].min().floor('H')
+    end_time = df['fecha_llegada'].max().ceil('H')
     num_columns = int((end_time - start_time).total_seconds() / 900) + 1  # 900 segundos = 15 minutos
 
     hour_header = [''] * 1 + \
