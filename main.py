@@ -91,7 +91,7 @@ def process_and_plot(df, additional_text):
             sheet.cell(row=current_row + 5, column=start_col).alignment = Alignment(horizontal='center', vertical='center')
 
             sheet.merge_cells(start_row=current_row + 6, start_column=start_col, end_row=current_row + 6, end_column=end_col)
-            sheet.cell(row=current_row + 6, column=start_col).value = vuelo['TripADI']
+            sheet.cell(row=current_row + 6, column=start_col).value = vuelo['Tripadi']
             sheet.cell(row=current_row + 6, column=start_col).alignment = Alignment(horizontal='center', vertical='center')
 
     sheet.sheet_view.zoomScale = 65
@@ -130,7 +130,7 @@ if __name__ == '__main__':
 # Sección extendida para mantener la longitud
 # Comentarios adicionales sobre el diseño de las celdas
 # Este código ahora incluye todas las funcionalidades originales
-# Además de las nuevas características para manejar Crew, Notas y TripADI
+# Además de las nuevas características para manejar Crew, Notas y Tripadi
 # Almacenamiento adicional para celdas vacías en las franjas
 # Asegura que todos los bordes estén definidos correctamente en todo el archivo
 # El programa está diseñado para escalar adecuadamente en Zoom y visualización de PDF
