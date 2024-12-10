@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, jsonify
+from flask import Flask, render_template, request, send_file, jsonify 
 import pandas as pd
 import openpyxl
 from openpyxl.styles import PatternFill, Alignment, Font, Border, Side
@@ -189,6 +189,110 @@ def process_and_plot(df, additional_text):
         sheet.append([''] * (1 + num_columns))
         base_row += 10  # Mover a la siguiente fila base
 
+    # Agregar las nuevas combinaciones de celdas y formateos según las especificaciones
+    # CORR.
+    sheet.merge_cells('A70:A73')
+    cell = sheet['A70']
+    cell.value = "CORR."
+    cell.fill = fill_light_gray
+    cell.font = Font(size=20, bold=True)
+    cell.alignment = Alignment(horizontal='center', vertical='center', text_rotation=90)
+    cell.border = medium_border
+
+    sheet.merge_cells('B70:CW73')
+    for row in range(70, 74):
+        for col in range(2, 102):
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
+
+    sheet.merge_cells('CX70:EA73')
+    for row in range(70, 74):
+        for col in range(102, 106):
+            sheet.cell(row=row, column=col).border = medium_border
+
+    # PROGRAMACION TRIPULACIONES
+    sheet.merge_cells('A74:A92')
+    cell = sheet['A74']
+    cell.value = "PROGRAMACION TRIPULACIONES"
+    cell.fill = fill_light_gray
+    cell.font = Font(size=20, bold=True)
+    cell.alignment = Alignment(horizontal='center', vertical='center', text_rotation=90)
+    cell.border = medium_border
+
+    # MIAMI
+    sheet.merge_cells('B74:W75')
+    for row in range(74, 76):
+        for col in range(2, 24):
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
+    cell = sheet['B74']
+    cell.value = "MIAMI"
+    cell.font = Font(size=20, bold=True)
+    cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    # BASES
+    sheet.merge_cells('X74:AS75')
+    for row in range(74, 76):
+        for col in range(24, 46):
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
+    cell = sheet['X74']
+    cell.value = "BASES"
+    cell.font = Font(size=20, bold=True)
+    cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    # TRASLADOS
+    sheet.merge_cells('AT74:BO75')
+    for row in range(74, 76):
+        for col in range(46, 64):
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
+    cell = sheet['AT74']
+    cell.value = "TRASLADOS"
+    cell.font = Font(size=20, bold=True)
+    cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    # ENTRENAMIENTO
+    sheet.merge_cells('BP74:CW75')
+    for row in range(74, 76):
+        for col in range(64, 102):
+            sheet.cell(row=row, column=col).border = medium_border
+            sheet.cell(row=row, column=col).fill = fill_light_gray
+    cell = sheet['BP74']
+    cell.value = "ENTRENAMIENTO"
+    cell.font = Font(size=20, bold=True)
+    cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    # Resto de combinaciones y formatos
+    sheet.merge_cells('CX74:EA92')
+    for row in range(74, 93):
+        for col in range(102, 106):
+            sheet.cell(row=row, column=col).border = medium_border
+
+    for row in range(76, 93):
+        for col in range(2, 24):
+            cell = sheet.cell(row=row, column=col)
+            cell.border = medium_border
+            cell.fill = fill_white
+
+    for row in range(76, 93):
+        for col in range(24, 46):
+            cell = sheet.cell(row=row, column=col)
+            cell.border = medium_border
+            cell.fill = fill_white
+
+    for row in range(76, 93):
+        for col in range(46, 64):
+            cell = sheet.cell(row=row, column=col)
+            cell.border = medium_border
+            cell.fill = fill_white
+
+    for row in range(76, 93):
+        for col in range(64, 102):
+            cell = sheet.cell(row=row, column=col)
+            cell.border = medium_border
+            cell.fill = fill_white
+
     # Configurar el zoom del PDF al 65%
     sheet.sheet_view.zoomScale = 65
 
@@ -202,4 +306,18 @@ def process_and_plot(df, additional_text):
 def index():
     if request.method == 'POST':
         table_data = request.form['table_data']
-        additional_text = request.form.get('additional_text
+        additional_text = request.form.get('additional_text')
+        try:
+            df = pd.read_json(table_data)
+        except ValueError as e:
+            return jsonify({'error': f"JSON parsing error: {e}"}), 400
+
+        excel, error = process_and_plot(df, additional_text)
+        if error:
+            return jsonify({'error': error}), 400
+        return send_file(excel, as_attachment=True, download_name='programacion_vuelos_qt.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port
