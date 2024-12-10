@@ -3,11 +3,17 @@ document.addEventListener('DOMContentLoaded', function() {
     var hot = new Handsontable(container, {
         data: [],
         rowHeaders: true,
-        colHeaders: ['N', 'Flight', 'Date', 'ST', 'State', 'STD', 'STA', 'Best DT', 'Best AT', 'From', 'To', 'Reg.', 'Own / Sub', 'Delay', 'Pax(F/C/Y)'],
+        colHeaders: [
+            'N', 'Flight', 'Date', 'ST', 'State', 'STD', 'STA', 'Best DT', 'Best AT', 
+            'From', 'To', 'Reg.', 'Own / Sub', 'Delay', 'Pax(F/C/Y)', 'Crew', 'Notas', 'Tripadi'
+        ],
         contextMenu: true,
         minSpareRows: 1,
         columns: [
-            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, 
+            { data: 'crew', type: 'text' },    // Columna Crew
+            { data: 'notas', type: 'text' },   // Columna Notas
+            { data: 'tripadi', type: 'text' }  // Columna Tripadi
         ]
     });
 
